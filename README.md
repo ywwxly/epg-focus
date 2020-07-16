@@ -21,11 +21,7 @@
 
 ```<div isfocus="1" id="recommend" class="nav_btn" @click="navRecommendClick">```
 
-```var iptv = new iptvFocus({
-    focusClassScale: 1.1, //聚焦class scale放大比例 其中聚焦class 有scale放大
-    visualMargin: 30, //可视边距大小  px 
-    viewEle: evm.$("viwe"), //可视移动元素 
-});```
+```var iptv = new iptvFocus({ focusClassScale: 1.1, //聚焦class scale放大比例 其中聚焦class 有scale放大visualMargin: 30, //可视边距大小  px viewEle: evm.$("viwe"), //可视移动元素 });```
 
 3. ```window.keyevent```为按键监听函数调用
 
