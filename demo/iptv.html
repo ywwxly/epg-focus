@@ -67,7 +67,7 @@
 </head>
 
 <body>
-    <div class="nav" group="{name:'nav',focus:'nav-focus'}" @down="column">
+    <div class="nav" group="{name:'nav',focus:'changeImg',blur:'blurImg'}" @down="column">
         <div isfocus style="background-color: #5f7712;">
             <p>1</p>
         </div>
@@ -116,30 +116,24 @@
             <p>11</p>
         </div>
     </div>
-    <div class="column" group="column2" @up="column">
-        <div isfocus style="background-color: #5f7712;">
+    <div class="column" group="column2" @up="column" @click="enter">
+        <div isfocus style="background-color: #5f7712;" @left="left">
             <p>1</p>
         </div>
         <div isfocus style="background-color: #776412;">
             <p>2</p>
         </div>
-        <div isfocus style="background-color: #267712;">
+        <div isfocus style="background-color: #267712;" @right="right">
             <p>3</p>
         </div>
-        <div isfocus style="background-color: #125f77;">
-            <p>4</p>
-        </div>
-        <div isfocus style="background-color: #5f7712;">
-            <p>5</p>
+        <div isfocus style="background-color: #5f7712;" @left="left">
+            <p>1</p>
         </div>
         <div isfocus style="background-color: #776412;">
-            <p>6</p>
+            <p>2</p>
         </div>
-        <div isfocus style="background-color: #267712;">
-            <p>7</p>
-        </div>
-        <div isfocus style="background-color: #125f77;">
-            <p>8</p>
+        <div isfocus style="background-color: #267712;" @right="right">
+            <p>3</p>
         </div>
     </div>
     <div class="column" id="layer" group="layer" @back="hiddenDiv">
@@ -200,7 +194,80 @@
         console.log(ele, ele.ele, "------------自定义失焦");
         ele.ele.style.backgroundColor = "#125f77"
     }
-    var column = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
+    var column = [1, 3, 6, 4, 5, 6, 7, 8, 9, 10, 11];
+
+    function left(e) {
+        console.log(e);
+        home._trun("left");
+    }
+
+    function right(e) {
+        console.log(e);
+        home._trun("right");
+    }
+
+    var home = {
+        _data: column,
+        _pages: 0,
+        _pagesCount: 6,
+        _trun: function (dir) {
+            //this._progress(); //渲染页码
+            var videoData = data = column;
+            var pages = videoData.length % this._pagesCount == 0 ? parseInt(videoData.length / this
+                ._pagesCount) : parseInt(videoData.length / this._pagesCount) + 1;
+            console.log(this._pages, pages);
+            if (dir == "right" && this._pages < pages - 1) {
+                this._pages++;
+                iptv.onFocus(iptv._groupList[iptv._nowEle.groupName].foucsList[0])
+            } else if (dir == "left" && this._pages > 0) {
+                this._pages--;
+            }
+            var length = this._length();
+            for (var i = 0; i < length; i++) {
+                var divEle = iptv._groupList[iptv._nowEle.groupName].foucsList[i].ele;
+                var pEle = divEle.children[0];
+                var gameName = data[(this._pages * this._pagesCount) + i];
+                console.log(i, divEle.children, gameName);
+                pEle.innerHTML = gameName;
+                var x = length;
+                while (x < this._pagesCount) {
+                    iptv._groupList[iptv._nowEle.groupName].foucsList[x].ele.style.display = "none";
+                    x++;
+                }
+                divEle.style.display = "block";
+            }
+        },
+        _progress: function () {
+            var videoData = this._data;
+            var pages = videoData.length % this._pagesCount == 0 ? parseInt(videoData.length / this
+                ._pagesCount) : parseInt(videoData.length / this._pagesCount) + 1;
+            if (pages == 0) {
+                evm.hidden("progress");
+            } else {
+                evm.visible("progress");
+                evm.$("progress").innerHTML = "" + parseInt(this._pages + 1) + " / " + pages;
+            }
+        },
+        //本页长度
+        _length: function () {
+            var videoData = column;
+            var length;
+            if (videoData.length > 0) {
+                length = (videoData.length % this._pagesCount == 0) || (videoData.length / ((this._pages + 1) *
+                    this._pagesCount) >= 1) ? this._pagesCount : videoData.length % this._pagesCount;
+            } else {
+                length = 0;
+            }
+            return length;
+        },
+        _enter: function (ele) {
+            console.log(home._data, home._pages, home._pagesCount, ele.focusIndex);
+            var gameName = home._data[(home._pages * home._pagesCount) + ele.focusIndex];
+            console.log(gameName,
+                "-------------gameName");
+        },
+    };
+    var enter = home._enter;
 
     function columnClick(ele) {
         console.log(ele, ele.focusIndex, column[ele.focusIndex]);

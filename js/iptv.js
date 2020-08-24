@@ -84,7 +84,16 @@ iptvFocus.prototype = {
                         if (window[AttributeObj.focus]) {
                             obj.focus = window[AttributeObj.focus];
                         } else {
+                            console.log(AttributeObj.focus, "-------AttributeObj.focus");
                             obj.focus = AttributeObj.focus;
+                        }
+                    }
+                    if (AttributeObj.blur) { //group对象中聚焦方法或className
+                        if (window[AttributeObj.blur]) {
+                            obj.blur = window[AttributeObj.blur];
+                        } else {
+                            console.log(AttributeObj.blur, "-------AttributeObj.blur");
+                            obj.blur = AttributeObj.blur;
                         }
                     }
                 }
@@ -225,19 +234,34 @@ iptvFocus.prototype = {
     onFocus: function (newEleObj, oldEleObj) {
         oldEleObj = oldEleObj || this._nowEle;
         this._nowEle = newEleObj;
+        var oldGroup = oldEleObj.groupName;
+        var eleBlur = oldEleObj.blur;
         if (oldEleObj) {
             console.log(oldEleObj, "----------------------------oldEleObj");
-            if (typeof oldEleObj.blur == "function") {
-                oldEleObj.blur(oldEleObj);
-            } else {
-                var oldGroupFocus = "";
-                if (this._groupList[oldEleObj.groupName]) {
-                    if (this._groupList[oldEleObj.groupName].focus) {
-                        oldGroupFocus = this._groupList[oldEleObj.groupName].focus;
-                    }
+            if (eleBlur) {
+                if (typeof oldEleObj.blur == "function") {
+                    oldEleObj.blur(oldEleObj);
+                } else {
+                    evm.removeClass(oldEleObj.ele, oldEleObj.blur);
                 }
+            } else {
+                var oldGroupBlur = this._groupList[oldGroup].blur;
+                if (oldGroupBlur) {
+                    if (typeof oldGroupBlur == "string") {
+                        evm.removeClass(oldEleObj.ele, oldGroupBlur);
+                    } else {
+                        oldGroupBlur(oldEleObj);
+                    }
+                } else {
+                    var oldGroupFocus = "";
+                    if (this._groupList[oldGroup]) {
+                        if (this._groupList[oldGroup].focus) {
+                            oldGroupFocus = this._groupList[oldGroup].focus;
+                        }
+                    }
 
-                evm.removeClass(oldEleObj.ele, oldEleObj.blur || (typeof oldEleObj.focus == "string" ? oldEleObj.focus : '') || oldGroupFocus || "focus_btn");
+                    evm.removeClass(oldEleObj.ele, (typeof oldEleObj.focus == "string" ? oldEleObj.focus : '') || oldGroupFocus || "focus_btn");
+                }
             }
         }
         var eleFocus = newEleObj.focus;
@@ -255,7 +279,7 @@ iptvFocus.prototype = {
                 if (typeof groupFocus == "string") {
                     evm.addClass(newEleObj.ele, groupFocus);
                 } else {
-                    groupFocus();
+                    groupFocus(newEleObj);
                 }
             } else {
                 evm.addClass(newEleObj.ele, "focus_btn");
@@ -276,7 +300,7 @@ iptvFocus.prototype = {
     _dirKey: function (dir) {
         if (this._nowEle[dir]) { //元素点击事件
             if (typeof this._nowEle[dir] == "function") {
-                this._nowEle[dir]();
+                this._nowEle[dir](this._nowEle);
             } else {
                 this.onFocus(this.findFocusEle(this._nowEle[dir]));
             }
@@ -447,34 +471,36 @@ iptvFocus.prototype = {
     rules: function (oObj, nObj, pDvalue, mDvalue, dir) {
         pinfo = this.infos(oObj.ele);
         ninfo = this.infos(nObj.ele);
-        var tmp, pref, min;
-        if (dir === 'up') {
-            var upOffset = pinfo.up + (pinfo.height * (this.focusClassScale - 1)) / 2 + 5;
-            if (upOffset >= ninfo.down) {
-                tmp = this.distance(ninfo.left, ninfo.up, pinfo.left, pinfo.up);
-                (!mDvalue || tmp < mDvalue) && (mDvalue = tmp, min = true);
-                (!pDvalue || this.contains(ninfo.left, ninfo.right, pinfo.left, pinfo.right) && tmp < pDvalue) && (pDvalue = tmp, pref = true);
-            }
-        } else if (dir === 'down') {
-            var downOffset = pinfo.down * (2 - this.focusClassScale) - 5;
-            if (downOffset <= ninfo.up) {
-                tmp = this.distance(ninfo.left, ninfo.up, pinfo.left, pinfo.up);
-                (!mDvalue || tmp < mDvalue) && (mDvalue = tmp, min = true);
-                (!pDvalue || this.contains(ninfo.left, ninfo.right, pinfo.left, pinfo.right) && tmp < pDvalue) && (pDvalue = tmp, pref = true);
-            }
-        } else if (dir === 'left') {
-            var leftOffset = pinfo.left + (pinfo.width * (this.focusClassScale - 1)) / 2 + 5;
-            if (leftOffset >= ninfo.right) {
-                tmp = this.distance(ninfo.right, ninfo.up, pinfo.left, pinfo.up);
-                (!mDvalue || tmp < mDvalue) && (mDvalue = tmp, min = true);
-                (!pDvalue || this.contains(ninfo.up, ninfo.down, pinfo.up, pinfo.down) && tmp < pDvalue) && (pDvalue = tmp, pref = true);
-            }
-        } else if (dir === 'right') {
-            var rightOffset = (pinfo.right * (2 - this.focusClassScale)) - 5;
-            if (rightOffset <= ninfo.left) {
-                tmp = this.distance(ninfo.left, ninfo.up, pinfo.left, pinfo.up);
-                (!mDvalue || tmp < mDvalue) && (mDvalue = tmp, min = true);
-                (!pDvalue || this.contains(ninfo.up, ninfo.down, pinfo.up, pinfo.down) && tmp < pDvalue) && (pDvalue = tmp, pref = true);
+        if (ninfo.width || ninfo.height) { //当元素存在，不为none时
+            var tmp, pref, min;
+            if (dir === 'up') {
+                var upOffset = pinfo.up + (pinfo.height * (this.focusClassScale - 1)) / 2 + 5;
+                if (upOffset >= ninfo.down) {
+                    tmp = this.distance(ninfo.left, ninfo.up, pinfo.left, pinfo.up);
+                    (!mDvalue || tmp < mDvalue) && (mDvalue = tmp, min = true);
+                    (!pDvalue || this.contains(ninfo.left, ninfo.right, pinfo.left, pinfo.right) && tmp < pDvalue) && (pDvalue = tmp, pref = true);
+                }
+            } else if (dir === 'down') {
+                var downOffset = pinfo.down * (2 - this.focusClassScale) - 5;
+                if (downOffset <= ninfo.up) {
+                    tmp = this.distance(ninfo.left, ninfo.up, pinfo.left, pinfo.up);
+                    (!mDvalue || tmp < mDvalue) && (mDvalue = tmp, min = true);
+                    (!pDvalue || this.contains(ninfo.left, ninfo.right, pinfo.left, pinfo.right) && tmp < pDvalue) && (pDvalue = tmp, pref = true);
+                }
+            } else if (dir === 'left') {
+                var leftOffset = pinfo.left + (pinfo.width * (this.focusClassScale - 1)) / 2 + 5;
+                if (leftOffset >= ninfo.right) {
+                    tmp = this.distance(ninfo.right, ninfo.up, pinfo.left, pinfo.up);
+                    (!mDvalue || tmp < mDvalue) && (mDvalue = tmp, min = true);
+                    (!pDvalue || this.contains(ninfo.up, ninfo.down, pinfo.up, pinfo.down) && tmp < pDvalue) && (pDvalue = tmp, pref = true);
+                }
+            } else if (dir === 'right') {
+                var rightOffset = (pinfo.right * (2 - this.focusClassScale)) - 5;
+                if (rightOffset <= ninfo.left) {
+                    tmp = this.distance(ninfo.left, ninfo.up, pinfo.left, pinfo.up);
+                    (!mDvalue || tmp < mDvalue) && (mDvalue = tmp, min = true);
+                    (!pDvalue || this.contains(ninfo.up, ninfo.down, pinfo.up, pinfo.down) && tmp < pDvalue) && (pDvalue = tmp, pref = true);
+                }
             }
         }
         return {
