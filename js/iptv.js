@@ -56,7 +56,9 @@ iptvFocus.prototype = {
                     obj.focus = window[eventString];
                 }
                 if (item.hasAttribute("default-focus")) { //获取默认聚焦对象
-                    this._nowEle = obj;
+                    if (!this._nowEle) {
+                        this._nowEle = obj;
+                    }
                 }
                 //获取绑定的虚拟事件
                 this.getEventAttribute(item, obj, ["blur", "left", "right", "up", "down", "click", "back"]);
@@ -80,22 +82,8 @@ iptvFocus.prototype = {
                 if (typeof AttributeName == "string" && AttributeName.indexOf("}") > -1) { //判断group中传递是否为对象形式
                     AttributeObj = eval("(" + AttributeName + ")"); //解析为对象
                     AttributeName = AttributeObj.name || index;
-                    if (AttributeObj.focus) { //group对象中聚焦方法或className
-                        if (window[AttributeObj.focus]) {
-                            obj.focus = window[AttributeObj.focus];
-                        } else {
-                            console.log(AttributeObj.focus, "-------AttributeObj.focus");
-                            obj.focus = AttributeObj.focus;
-                        }
-                    }
-                    if (AttributeObj.blur) { //group对象中聚焦方法或className
-                        if (window[AttributeObj.blur]) {
-                            obj.blur = window[AttributeObj.blur];
-                        } else {
-                            console.log(AttributeObj.blur, "-------AttributeObj.blur");
-                            obj.blur = AttributeObj.blur;
-                        }
-                    }
+                    getGroupEventAttribute(AttributeObj, obj, "focus");
+                    getGroupEventAttribute(AttributeObj, obj, "blur");
                 }
                 obj[Attribute + "Name"] = AttributeName;
                 obj[Attribute + "Ele"] = item;
@@ -106,6 +94,17 @@ iptvFocus.prototype = {
             }
         }
         return focusEle;
+
+        function getGroupEventAttribute(AttributeObjs, objArm, Attributes) {
+            if (AttributeObjs[Attributes]) { //group对象中聚焦方法或className
+                if (window[AttributeObjs[Attributes]]) {
+                    objArm[Attributes] = window[AttributeObjs[Attributes]];
+                } else {
+                    console.log(AttributeObjs[Attributes], "-------AttributeObjs[Attributes]");
+                    objArm[Attributes] = AttributeObjs[Attributes];
+                }
+            }
+        }
     },
     /**
      * 遍历元素的虚拟事件
@@ -153,11 +152,13 @@ iptvFocus.prototype = {
                     }
                 }
                 focusList = focusList.concat(noFocus);
-                this._groupList.no = {
-                    groupName: "no",
-                    groupEle: null,
-                    foucsList: noFocus
-                };
+                if (noFocus.length > 0) {
+                    this._groupList.no = {
+                        groupName: "no",
+                        groupEle: null,
+                        foucsList: noFocus
+                    };
+                }
             }
         }
 
@@ -320,6 +321,10 @@ iptvFocus.prototype = {
         } else {
             //全局返回方法
             console.log(dos, this._nowEle, "------------全局方法");
+            if (dos == "back" && typeof BackParent == "function") {
+                //返回
+                BackParent();
+            }
         }
     },
     _down: function () {
@@ -335,7 +340,8 @@ iptvFocus.prototype = {
         this._dirKey("left");
     },
     _back: function () {
-        this.saveFocusIndex();
+        //返回清除聚焦记录
+        evm.cutCookie(this.pathname);
         this._doKey("back");
     },
     /**
