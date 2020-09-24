@@ -1,3 +1,4 @@
+window.runTime = null;
 /**
  * iptv聚焦构造函数
  *   isfocus="" 聚焦的class 默认聚焦元素: default-focus 优先级 isfocus>group>全局className;
@@ -20,19 +21,21 @@ function iptvFocus(options) {
     var pathname = contentName.split("/")[contentName.split("/").length - 1];
     contentName = pathname.slice(0, pathname.indexOf(".")); //去除.html
     this.pathname = contentName; //当前页焦点记录标识
+
     this.init();
 }
 iptvFocus.prototype = {
     version: "1.1.0", //版本号
     focusClassScale: 1.1, //聚焦class scale放大比例
     visualMargin: 30, //可视边距大小  px
-    viewEle: evm.$("viwe") || document.body, //可视移动元素
+    viewEle: evm.$("view") || document.body, //可视移动元素
     _nowEle: null, //当前聚焦元素
     _group: "column", //默认聚焦group
     _hasLayer: false, //是否有弹窗
     _groupList: null, //聚焦组集合
     _foucsList: null, //可聚焦元素集合
     pathname: null, //当前页焦点记录标识
+    oldEleObj: null, //上次聚焦对象
     //获取目标属性的数组
     getAttributeEle: function (Attribute, rootEles, groupName, TagName) {
         rootEle = (rootEles || document).getElementsByTagName(TagName || "*");
@@ -52,8 +55,11 @@ iptvFocus.prototype = {
                     groupName: groupName,
                     // isLayer: isLayer
                 };
-                if (typeof window[eventString] == "function") {
-                    obj.focus = window[eventString];
+                if (eventString) {
+                    var eventJavaScript = stringToJavascript(eventString);
+                    if (typeof eventJavaScript == "function") {
+                        obj.focus = eventJavaScript;
+                    }
                 }
                 if (item.hasAttribute("default-focus")) { //获取默认聚焦对象
                     if (!this._nowEle) {
@@ -80,7 +86,7 @@ iptvFocus.prototype = {
                 var obj = {};
                 var AttributeName = item.getAttribute(Attribute) || index;
                 if (typeof AttributeName == "string" && AttributeName.indexOf("}") > -1) { //判断group中传递是否为对象形式
-                    AttributeObj = eval("(" + AttributeName + ")"); //解析为对象
+                    AttributeObj = stringToJavascript(AttributeName); //解析为对象
                     AttributeName = AttributeObj.name || index;
                     getGroupEventAttribute(AttributeObj, obj, "focus");
                     getGroupEventAttribute(AttributeObj, obj, "blur");
@@ -96,11 +102,12 @@ iptvFocus.prototype = {
         return focusEle;
 
         function getGroupEventAttribute(AttributeObjs, objArm, Attributes) {
+
             if (AttributeObjs[Attributes]) { //group对象中聚焦方法或className
-                if (window[AttributeObjs[Attributes]]) {
-                    objArm[Attributes] = window[AttributeObjs[Attributes]];
+                var eventJavaScript = stringToJavascript(AttributeObjs[Attributes]);
+                if (eventJavaScript) {
+                    objArm[Attributes] = eventJavaScript;
                 } else {
-                    console.log(AttributeObjs[Attributes], "-------AttributeObjs[Attributes]");
                     objArm[Attributes] = AttributeObjs[Attributes];
                 }
             }
@@ -116,12 +123,16 @@ iptvFocus.prototype = {
         if (typeof Attributes == "string") { //如果是字符串
             if (Obj.hasAttribute("@" + Attributes)) {
                 var eventString = Obj.getAttribute("@" + Attributes);
-                // console.log(typeof window[eventString] == "function", eventString);
-                if (typeof window[eventString] == "function") {
-                    setObj[Attributes] = window[eventString];
-                } else {
-                    setObj[Attributes] = eventString;
+                if (eventString) {
+                    var eventJavaScript = stringToJavascript(eventString);
+                    // console.log(eventJavaScript, "-------eventJavaScript");
+                    if (typeof eventJavaScript == "function") {
+                        setObj[Attributes] = eventJavaScript;
+                    } else {
+                        setObj[Attributes] = eventString;
+                    }
                 }
+
             }
         } else { //如果是数组形式
             for (var i = 0; i < Attributes.length; i++) {
@@ -223,9 +234,12 @@ iptvFocus.prototype = {
             this._nowEle = this.findFocusEle(focusIndex[1], this._groupList[focusIndex[0]].foucsList);
         }
         this._nowEle = this._nowEle || this._groupList[this._group].foucsList[0];
+
         this.onFocus(this._nowEle);
         this._foucsList = this.getAllFocusList();
         console.log(this._groupList, this._foucsList, this._nowEle);
+        runTime = new Date().getTime() - runTime;
+        console.log(runTime, "----------runTime");
     },
     /**
      * 设置目标对象为聚焦状态
@@ -238,12 +252,12 @@ iptvFocus.prototype = {
         var oldGroup = oldEleObj.groupName;
         var eleBlur = oldEleObj.blur;
         if (oldEleObj) {
-            console.log(oldEleObj, "----------------------------oldEleObj");
+            //console.log(oldEleObj, "----------------------------oldEleObj");
             if (eleBlur) {
-                if (typeof oldEleObj.blur == "function") {
-                    oldEleObj.blur(oldEleObj);
+                if (typeof eleBlur == "function") {
+                    this.callFn(eleBlur, oldEleObj, oldGroup);
                 } else {
-                    evm.removeClass(oldEleObj.ele, oldEleObj.blur);
+                    evm.removeClass(oldEleObj.ele, eleBlur);
                 }
             } else {
                 var oldGroupBlur = this._groupList[oldGroup].blur;
@@ -251,7 +265,7 @@ iptvFocus.prototype = {
                     if (typeof oldGroupBlur == "string") {
                         evm.removeClass(oldEleObj.ele, oldGroupBlur);
                     } else {
-                        oldGroupBlur(oldEleObj);
+                        this.callFn(oldGroupBlur, oldEleObj, oldGroup);
                     }
                 } else {
                     var oldGroupFocus = "";
@@ -264,13 +278,15 @@ iptvFocus.prototype = {
                     evm.removeClass(oldEleObj.ele, (typeof oldEleObj.focus == "string" ? oldEleObj.focus : '') || oldGroupFocus || "focus_btn");
                 }
             }
+            this.oldEleObj = oldEleObj;
         }
         var eleFocus = newEleObj.focus;
         this._group = newEleObj.groupName;
         //console.log(this._group, newEleObj, "---------------this._group");
         if (eleFocus) {
             if (typeof eleFocus == "function") {
-                eleFocus(newEleObj);
+                //eleFocus(newEleObj);
+                this.callFn(eleFocus, newEleObj, this._group);
             } else {
                 evm.addClass(newEleObj.ele, eleFocus);
             }
@@ -280,12 +296,15 @@ iptvFocus.prototype = {
                 if (typeof groupFocus == "string") {
                     evm.addClass(newEleObj.ele, groupFocus);
                 } else {
-                    groupFocus(newEleObj);
+                    //groupFocus(newEleObj);
+                    this.callFn(groupFocus, newEleObj, this._group);
                 }
             } else {
                 evm.addClass(newEleObj.ele, "focus_btn");
             }
         }
+        // runTime = new Date().getTime() - runTime;
+        // console.log(runTime, "----------moveE");
     },
     saveFocusIndex: function (obj) {
         obj = obj || this._nowEle;
@@ -299,11 +318,13 @@ iptvFocus.prototype = {
      * @param {String} dir 移动方向 
      */
     _dirKey: function (dir) {
-        if (this._nowEle[dir]) { //元素点击事件
-            if (typeof this._nowEle[dir] == "function") {
-                this._nowEle[dir](this._nowEle);
+        var dirFun = this._nowEle[dir];
+        if (dirFun) { //元素点击事件
+            if (typeof dirFun == "function") {
+                //dirFun(this._nowEle);
+                this.callFn(dirFun, this._nowEle, this._nowEle.groupName);
             } else {
-                this.onFocus(this.findFocusEle(this._nowEle[dir]));
+                this.onFocus(this.findFocusEle(dirFun));
             }
         } else {
             this.move(dir);
@@ -315,9 +336,11 @@ iptvFocus.prototype = {
      */
     _doKey: function (dos) {
         if (this._nowEle[dos]) { //元素点击事件
-            this._nowEle[dos]();
+            //this._nowEle[dos]();
+            this.callFn(this._nowEle[dos], this._nowEle, this._nowEle.groupName);
         } else if (this._groupList[this._nowEle.groupName][dos]) {
-            this._groupList[this._nowEle.groupName][dos](this._nowEle);
+            //this._groupList[this._nowEle.groupName][dos](this._nowEle);
+            this.callFn(this._groupList[this._nowEle.groupName][dos], this._nowEle, this._nowEle.groupName);
         } else {
             //全局返回方法
             console.log(dos, this._nowEle, "------------全局方法");
@@ -353,6 +376,22 @@ iptvFocus.prototype = {
         this._doKey("click");
     },
     /**
+     * 解析属性值中的方法并并调用
+     * 
+     * @param {function} fn  目标方法
+     * @param {object} obj  传入的聚焦对象
+     * @param {string} areaObj 对应groupName 的group移动对象
+     */
+    callFn: function (fn, obj, areaObj) {
+        var fnName = functionName(fn);
+        if (fnName) {
+            fn(obj, this.oldEleObj);
+        } else {
+            var that = stringToJavascript(areaObj);
+            fn.call(that, obj, this.oldEleObj);
+        }
+    },
+    /**
      * 遍历目标方向的最近元素
      * @param {String} keyDir move 方向
      * @param {Array} foucsList  聚焦数组
@@ -383,34 +422,7 @@ iptvFocus.prototype = {
             } else if (keyDir === "up" || keyDir === "down") {
                 this._nowEle = pref || min;
             }
-            var focusEleRect = this.getBoundingClientRect(this._nowEle.ele);
-            var viewEleRect = this.getBoundingClientRect(this.viewEle);
-            var focusY = keyDir === "up" ? focusEleRect.y : focusEleRect.y + focusEleRect.height;
-            var focusX = keyDir === "left" ? focusEleRect.x : focusEleRect.x + focusEleRect.width;
-            // console.log(focusX, focusY, this._nowEle, "-----------------focusX");
-            //console.log(focusEleRect.y + focusEleRect.height, focusEleRect.y, focusEleRect.height, "--------");
-            if (focusY > 720) { //Y轴超出可视大小
-                if (keyDir === "left" || keyDir === "right") { //左右方向移动 屏蔽Y轴方向逻辑的
-                    this._nowEle = oldEle;
-                } else {
-                    this.viewEle.style.top = viewEleRect.y + (720 - this.visualMargin) - focusY + "px";
-                }
-            } else if (focusEleRect.y < 0) {
-                var topY = viewEleRect.y + focusEleRect.height + this.visualMargin;
-                if (Math.abs(topY) < 10) {
-                    topY = 0;
-                }
-                this.viewEle.style.top = topY + "px";
-            }
-            if (focusX > 1280) { //X轴超出可视大小
-                if (keyDir === "left" || keyDir === "right") {
-                    this._nowEle.ele.parentElement.style.left = this.getBoundingClientRect(oldEle.ele.parentElement).x + (1280 - this.visualMargin) - focusX + "px";
-                } else {
-                    this._nowEle = oldEle;
-                }
-            } else if (focusX <= 0) {
-                this._nowEle.ele.parentElement.style.left = this.getBoundingClientRect(oldEle.ele.parentElement).x + focusEleRect.width + this.visualMargin + "px";
-            }
+            this.moveScroll(keyDir, oldEle);
             this.onFocus(this._nowEle, oldEle);
             return this._nowEle;
         } else {
@@ -423,6 +435,65 @@ iptvFocus.prototype = {
                 this.move(keyDir, this._foucsList, "noGroup");
             }
             return;
+        }
+    },
+    //可视区域自适应
+    moveScroll: function (keyDir, oldEle) {
+        var moveEle = this._groupList[this._nowEle.groupName].groupEle;
+        if (!moveEle) {
+            moveEle = this._nowEle.ele.parentElement;
+        }
+        if (!moveEle) {
+            moveEle = this.viewEle;
+        }
+        var moveRect = this.getBoundingClientRect(moveEle);
+        var focusEleRect = this.getBoundingClientRect(this._nowEle.ele);
+        var oldEleRect = oldEle ? this.getBoundingClientRect(oldEle.ele) : {
+            x: focusEleRect.width - this.visualMargin,
+            y: focusEleRect.height - this.visualMargin
+        };
+
+        var viewEleRect = this.getBoundingClientRect(moveEle.parentElement || this.viewEle);
+        var focusY = keyDir === "up" ? focusEleRect.y - viewEleRect.y : focusEleRect.y - viewEleRect.y + focusEleRect.height;
+        var focusX = keyDir === "left" ? focusEleRect.x - viewEleRect.x : focusEleRect.x - viewEleRect.x + focusEleRect.width;
+        var MaxTop = viewEleRect.height || 720;
+        var MaxLeft = viewEleRect.width || 1280;
+        console.log(focusX, MaxLeft);
+        // console.log(moveEle, focusEleRect, viewEleRect, this.getBoundingClientRect(moveEle), "--------");
+        if (focusY >= MaxTop) { //Y轴超出可视大小
+            if (keyDir === "left" || keyDir === "right") { //左右方向移动 屏蔽Y轴方向逻辑的
+                if (oldEle)
+                    this._nowEle = oldEle;
+            } else {
+
+                moveEle.style.top = (moveRect.y > this.visualMargin ? moveRect.y : moveRect.y - this.visualMargin) - viewEleRect.y + (MaxTop - this.visualMargin) - focusY + "px";
+            }
+        } else if (focusY < 0) {
+            var topY = moveRect.y - viewEleRect.y + oldEleRect.y - focusEleRect.y;
+            if (topY > 0 && topY < focusEleRect.height) {
+                topY = 0;
+            }
+            if (Math.abs(topY) < this.visualMargin) {
+                topY = 0;
+            }
+            moveEle.style.top = topY + "px";
+        }
+        if (focusX > MaxLeft) { //X轴超出可视大小
+            if (keyDir === "left" || keyDir === "right") {
+                moveEle.style.left = (moveRect.x > this.visualMargin ? moveRect.x : moveRect.x - this.visualMargin) - viewEleRect.x + (MaxLeft - this.visualMargin) - focusX + "px";;
+            } else {
+                if (oldEle)
+                    this._nowEle = oldEle;
+            }
+        } else if (focusX < 0) {
+            var topX = moveRect.x - viewEleRect.x + oldEleRect.x - focusEleRect.x;
+            if (topX > 0 && topX < focusEleRect.width) {
+                topX = 0;
+            }
+            if (Math.abs(topX) < this.visualMargin) {
+                topX = 0;
+            }
+            moveEle.style.left = topX + "px";
         }
     },
     /**
@@ -438,10 +509,10 @@ iptvFocus.prototype = {
         var x = getLeft(ele),
             y = getTop(ele),
             width = ele.offsetWidth,
-            heirhgt = ele.offsetHeight;
+            heihgt = ele.offsetHeight;
         return {
             top: y,
-            bottom: y + heirhgt,
+            bottom: y + heihgt,
             left: x,
             right: x + width,
             width: ele.offsetWidth,
@@ -517,13 +588,42 @@ iptvFocus.prototype = {
         };
     }
 };
-var iptv = new iptvFocus({
-    hasLayer: true
-});
-window.onunload = function () {
-    //离开页面时 自动记录焦点
-    iptv.saveFocusIndex();
-};
+
+
+/**
+ * 获取Function的name 兼容写法
+ * @param {function} fn 
+ */
+function functionName(fn) {
+    var ret = fn.toString();
+    ret = ret.substr('function '.length);
+    ret = ret.substr(0, ret.indexOf('('));
+    return ret;
+}
+/**
+ * 字符串转化为Javascript
+ * @param {string} string 
+ */
+function stringToJavascript(string) {
+    try {
+        return eval("(" + string + ")");
+    } catch (error) {
+        return false;
+    }
+
+}
+
+function getTop(e) {
+    var t = e.offsetTop;
+    return null != e.offsetParent && (t += getTop(e.offsetParent)),
+        t
+}
+
+function getLeft(e) {
+    var t = e.offsetLeft;
+    return null != e.offsetParent && (t += getLeft(e.offsetParent)),
+        t
+}
 window.keyevent = function () {
     var keyobj = iptv;
     if (!keyobj) {

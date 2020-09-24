@@ -20,9 +20,9 @@
 
 示例：
 
-``` <div group="{name:'nav',focus:'string'}" @down="recommend" @click="navClick"> ```
+```  <div id="recommend" group="{name:'recommend',focus:'recommend._focus',blur:'recommend._blur'}" @up="nav"  @click="recommend._enter"> ```
 
-```<div isfocus="1" id="recommend" class="nav_btn" @click="navRecommendClick">```
+```<div isfocus class="nav_btn" @click="navRecommendClick">```
 
 ```var iptv = new iptvFocus({ focusClassScale: 1.1, //聚焦class scale放大比例 其中聚焦class 有scale放大visualMargin: 30, //可视边距大小  px viewEle: evm.$("viwe"), //可视移动元素 });```
 
@@ -58,3 +58,12 @@
 1. 修复未查找到未分组的元素对象，no空对象仍在导致```default-focus```指定的默认聚焦对象 移动错误的BUG
 
 2. 返回键时清除聚焦cookie 默认全局检测执行全局返回```BackParent```函数
+
+### 2020.9.24
+
+1. 优化自定义可视窗口内自动调节的逻辑
+    - 推荐group父元素为固定可视化窗口
+
+2. 优化元素属性绑定的方法的调用
+
+3. 扩大单页面实用性：逻辑分组处理，自定义不同的移动逻辑

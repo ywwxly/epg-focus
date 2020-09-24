@@ -123,10 +123,10 @@
         <div isfocus style="background-color: #776412;">
             <p>2</p>
         </div>
-        <div isfocus style="background-color: #267712;" @right="right">
+        <div isfocus style="background-color: #267712;">
             <p>3</p>
         </div>
-        <div isfocus style="background-color: #5f7712;" @left="left">
+        <div isfocus style="background-color: #5f7712;">
             <p>1</p>
         </div>
         <div isfocus style="background-color: #776412;">
@@ -165,6 +165,7 @@
 </body>
 <script src="/js/evm.js"></script>
 <script src="/js/keyBase.js"></script>
+<script src="/js/iptv.js"></script>
 <script>
     function navClick(ele) {
         console.log(ele, "-------nav");
@@ -272,8 +273,11 @@
     function columnClick(ele) {
         console.log(ele, ele.focusIndex, column[ele.focusIndex]);
     }
+    var iptv = new iptvFocus({
+        hasLayer: true
+    });
 </script>
-<script src="/js/iptv.js"></script>
+
 
 
 </html>
