@@ -25,7 +25,7 @@ function iptvFocus(options) {
     this.init();
 }
 iptvFocus.prototype = {
-    version: "1.1.0", //版本号
+    version: "1.1.1", //版本号
     focusClassScale: 1.1, //聚焦class scale放大比例
     visualMargin: 30, //可视边距大小  px
     viewEle: evm.$("view") || document.body, //可视移动元素
@@ -35,7 +35,7 @@ iptvFocus.prototype = {
     _groupList: null, //聚焦组集合
     _foucsList: null, //可聚焦元素集合
     pathname: null, //当前页焦点记录标识
-    oldEleObj: null, //上次聚焦对象
+    oldEleObj: null, //上次聚焦对象 
     //获取目标属性的数组
     getAttributeEle: function (Attribute, rootEles, groupName, TagName) {
         rootEle = (rootEles || document).getElementsByTagName(TagName || "*");
@@ -44,32 +44,34 @@ iptvFocus.prototype = {
         var groupFocusIndex = 0;
         for (var index = 0; index < rootEleObj.length; index++) {
             var item = rootEleObj[index];
-            if (item.hasAttribute(Attribute)) { //查找可聚焦元素并添加
-                // var isLayer = item.hasAttribute("isLayer");
-                var eventString = item.getAttribute(Attribute);
-                var obj = {
-                    index: index,
-                    focusIndex: groupFocusIndex, //该组下聚焦索引值
-                    ele: item,
-                    focus: eventString,
-                    groupName: groupName,
-                    // isLayer: isLayer
-                };
-                if (eventString) {
-                    var eventJavaScript = stringToJavascript(eventString);
-                    if (typeof eventJavaScript == "function") {
-                        obj.focus = eventJavaScript;
+            if (item.nodeType == 1) {
+                if (item.hasAttribute(Attribute)) { //查找可聚焦元素并添加
+                    // var isLayer = item.hasAttribute("isLayer");
+                    var eventString = item.getAttribute(Attribute);
+                    var obj = {
+                        index: index,
+                        focusIndex: groupFocusIndex, //该组下聚焦索引值
+                        ele: item,
+                        focus: eventString,
+                        groupName: groupName,
+                        // isLayer: isLayer
+                    };
+                    if (eventString) {
+                        var eventJavaScript = stringToJavascript(eventString);
+                        if (typeof eventJavaScript == "function") {
+                            obj.focus = eventJavaScript;
+                        }
                     }
-                }
-                if (item.hasAttribute("default-focus")) { //获取默认聚焦对象
-                    if (!this._nowEle) {
-                        this._nowEle = obj;
+                    if (item.hasAttribute("default-focus")) { //获取默认聚焦对象
+                        if (!this._nowEle) {
+                            this._nowEle = obj;
+                        }
                     }
+                    //获取绑定的虚拟事件
+                    this.getEventAttribute(item, obj, ["blur", "left", "right", "up", "down", "click", "back"]);
+                    focusEle.push(obj);
+                    groupFocusIndex++;
                 }
-                //获取绑定的虚拟事件
-                this.getEventAttribute(item, obj, ["blur", "left", "right", "up", "down", "click", "back"]);
-                focusEle.push(obj);
-                groupFocusIndex++;
             }
         }
         return focusEle;
@@ -81,22 +83,24 @@ iptvFocus.prototype = {
         var rootEleObj = Object.values(rootEle);
         for (var index = 0; index < rootEleObj.length; index++) {
             var item = rootEleObj[index];
-            if (item.hasAttribute(Attribute)) {
-                var AttributeObj = {};
-                var obj = {};
-                var AttributeName = item.getAttribute(Attribute) || index;
-                if (typeof AttributeName == "string" && AttributeName.indexOf("}") > -1) { //判断group中传递是否为对象形式
-                    AttributeObj = stringToJavascript(AttributeName); //解析为对象
-                    AttributeName = AttributeObj.name || index;
-                    getGroupEventAttribute(AttributeObj, obj, "focus");
-                    getGroupEventAttribute(AttributeObj, obj, "blur");
+            if (item.nodeType == 1) {
+                if (item.hasAttribute(Attribute)) {
+                    var AttributeObj = {};
+                    var obj = {};
+                    var AttributeName = item.getAttribute(Attribute) || index;
+                    if (typeof AttributeName == "string" && AttributeName.indexOf("}") > -1) { //判断group中传递是否为对象形式
+                        AttributeObj = stringToJavascript(AttributeName); //解析为对象
+                        AttributeName = AttributeObj.name || index;
+                        getGroupEventAttribute(AttributeObj, obj, "focus");
+                        getGroupEventAttribute(AttributeObj, obj, "blur");
+                    }
+                    obj[Attribute + "Name"] = AttributeName;
+                    obj[Attribute + "Ele"] = item;
+                    obj.foucsList = this.getAttributeEle("isfocus", item, AttributeName); //获取该group下的可聚焦对象
+                    //获取绑定的虚拟事件
+                    this.getEventAttribute(item, obj, ["left", "right", "up", "down", "click", "back"]);
+                    focusEle[AttributeName] = obj;
                 }
-                obj[Attribute + "Name"] = AttributeName;
-                obj[Attribute + "Ele"] = item;
-                obj.foucsList = this.getAttributeEle("isfocus", item, AttributeName); //获取该group下的可聚焦对象
-                //获取绑定的虚拟事件
-                this.getEventAttribute(item, obj, ["left", "right", "up", "down", "click", "back"]);
-                focusEle[AttributeName] = obj;
             }
         }
         return focusEle;
@@ -121,7 +125,7 @@ iptvFocus.prototype = {
      */
     getEventAttribute: function (Obj, setObj, Attributes) {
         if (typeof Attributes == "string") { //如果是字符串
-            if (Obj.hasAttribute("@" + Attributes)) {
+            if (Obj.nodeType == 1 && Obj.hasAttribute("@" + Attributes)) {
                 var eventString = Obj.getAttribute("@" + Attributes);
                 if (eventString) {
                     var eventJavaScript = stringToJavascript(eventString);
@@ -237,9 +241,9 @@ iptvFocus.prototype = {
 
         this.onFocus(this._nowEle);
         this._foucsList = this.getAllFocusList();
-        console.log(this._groupList, this._foucsList, this._nowEle);
+        //console.log(this._groupList, this._foucsList, this._nowEle);
         runTime = new Date().getTime() - runTime;
-        console.log(runTime, "----------runTime");
+        //console.log(runTime, "----------runTime");
     },
     /**
      * 设置目标对象为聚焦状态
@@ -343,7 +347,7 @@ iptvFocus.prototype = {
             this.callFn(this._groupList[this._nowEle.groupName][dos], this._nowEle, this._nowEle.groupName);
         } else {
             //全局返回方法
-            console.log(dos, this._nowEle, "------------全局方法");
+            //console.log(dos, this._nowEle, "------------全局方法");
             if (dos == "back" && typeof BackParent == "function") {
                 //返回
                 BackParent();
@@ -458,7 +462,7 @@ iptvFocus.prototype = {
         var focusX = keyDir === "left" ? focusEleRect.x - viewEleRect.x : focusEleRect.x - viewEleRect.x + focusEleRect.width;
         var MaxTop = viewEleRect.height || 720;
         var MaxLeft = viewEleRect.width || 1280;
-        console.log(focusX, MaxLeft);
+        //console.log(focusX, MaxLeft);
         // console.log(moveEle, focusEleRect, viewEleRect, this.getBoundingClientRect(moveEle), "--------");
         if (focusY >= MaxTop) { //Y轴超出可视大小
             if (keyDir === "left" || keyDir === "right") { //左右方向移动 屏蔽Y轴方向逻辑的
