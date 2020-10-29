@@ -1,3 +1,4 @@
+/*! epg-focus v1.1.3 | (c) epg focus system |by XUZHEN https://gitee.com/ywwxly/epg-focus /license */
 window.runTime = null;
 /**
  * iptv聚焦构造函数
@@ -25,7 +26,7 @@ function iptvFocus(options) {
     this.init();
 }
 iptvFocus.prototype = {
-    version: "1.1.1", //版本号
+    version: "1.1.3", //版本号
     focusClassScale: 1.1, //聚焦class scale放大比例
     visualMargin: 30, //可视边距大小  px
     viewEle: evm.$("view") || document.body, //可视移动元素
@@ -36,6 +37,7 @@ iptvFocus.prototype = {
     _foucsList: null, //可聚焦元素集合
     pathname: null, //当前页焦点记录标识
     oldEleObj: null, //上次聚焦对象 
+    defaultFocus: null, //临时保存组的默认聚焦对象
     //获取目标属性的数组
     getAttributeEle: function (Attribute, rootEles, groupName, TagName) {
         rootEle = (rootEles || document).getElementsByTagName(TagName || "*");
@@ -66,6 +68,8 @@ iptvFocus.prototype = {
                         if (!this._nowEle) {
                             this._nowEle = obj;
                         }
+                        //临时保存组的默认聚焦对象
+                        this.defaultFocus = obj;
                     }
                     //获取绑定的虚拟事件
                     this.getEventAttribute(item, obj, ["blur", "left", "right", "up", "down", "click", "back"]);
@@ -97,6 +101,11 @@ iptvFocus.prototype = {
                     obj[Attribute + "Name"] = AttributeName;
                     obj[Attribute + "Ele"] = item;
                     obj.foucsList = this.getAttributeEle("isfocus", item, AttributeName); //获取该group下的可聚焦对象
+                    if (this.defaultFocus) {
+                        //有默认聚焦对象则保存
+                        obj.defaultFocus = this.defaultFocus;
+                        this.defaultFocus = null;
+                    }
                     //获取绑定的虚拟事件
                     this.getEventAttribute(item, obj, ["left", "right", "up", "down", "click", "back"]);
                     focusEle[AttributeName] = obj;
@@ -104,7 +113,7 @@ iptvFocus.prototype = {
             }
         }
         return focusEle;
-
+        //获取组事件
         function getGroupEventAttribute(AttributeObjs, objArm, Attributes) {
 
             if (AttributeObjs[Attributes]) { //group对象中聚焦方法或className
@@ -222,9 +231,14 @@ iptvFocus.prototype = {
     /**
      * 
      */
-    focusGroup: function (group) {
+    focusGroup: function (group, focusIndex) {
         // console.log(this._groupList);
-        this.onFocus(this._groupList[group].foucsList[0]);
+        //优先聚焦指定
+        if (focusIndex) {
+            this.onFocus(this.findFocusEle(focusIndex, this._groupList[group].foucsList));
+        } else {
+            this.onFocus(this._groupList[group].defaultFocus || this._groupList[group].foucsList[0]);
+        }
     },
     /**
      * 初始化

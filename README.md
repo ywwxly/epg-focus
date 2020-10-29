@@ -71,3 +71,7 @@
 ### 2020.10.26
 
 1. ```getAttribute```执行前做```nodeType ==1```（Node.ELEMENT_NODE，元素节点）判断
+
+### 2020.10.29
+
+1. 弹窗切换不同组对象时（focusGroup）,聚焦对象优先级：```聚焦对象id/索引```指定>```default-focus```默认>聚焦对象第一个
