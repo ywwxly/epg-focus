@@ -1,7 +1,7 @@
 
 # 简介
 
- EPG聚焦逻辑，通过计算聚焦元素距离，判断距离最小值的元素，达到自动聚焦效果.
+ EPG聚焦逻辑，采用类Vue模板语法,通过计算聚焦元素距离，判断距离最小值的元素，达到自动聚焦效果.
 
 ## 使用方法
 
@@ -20,7 +20,7 @@
 
 示例：
 
-```  <div id="recommend" group="{name:'recommend',focus:'recommend._focus',blur:'recommend._blur'}" @up="nav"  @click="recommend._enter"> ```
+```<div id="recommend" group="{name:'recommend',focus:'recommend._focus',blur:'recommend._blur'}" @up="nav"  @click="recommend._enter">```
 
 ```<div isfocus class="nav_btn" @click="navRecommendClick">```
 
@@ -28,11 +28,11 @@
 
 3. ```window.keyevent```为按键监听函数调用
 
-4.  已知问题：
-    - 未做焦点历史记录
-    - 必须要设置group
-    - 必须设置切换group 虚拟方向事件
-    - xpath-dom暂未使用（焦点历史记录），兼容性考虑暂时不用
+4. 已知问题：
+    - ~~未做焦点历史记录~~
+    - ~~必须要设置group~~
+    - ~~必须设置切换group 虚拟方向事件~~
+    - xpath-dom暂未使用（焦点历史记录），兼容性问题考虑暂时不用
 后续添加group更加灵活非必须设置，焦点历史记录
 
 ### 2020.7.20
@@ -75,3 +75,7 @@
 ### 2020.10.29
 
 1. 弹窗切换不同组对象时（focusGroup）,聚焦对象优先级：```聚焦对象id/索引```指定>```default-focus```默认>聚焦对象第一个
+
+### 2020.11.06
+
+1. 修改md文档，版本号语义化

@@ -26,7 +26,7 @@ function iptvFocus(options) {
     this.init();
 }
 iptvFocus.prototype = {
-    version: "1.1.3", //版本号
+    version: "2.1.0", //版本号
     focusClassScale: 1.1, //聚焦class scale放大比例
     visualMargin: 30, //可视边距大小  px
     viewEle: evm.$("view") || document.body, //可视移动元素
