@@ -1,4 +1,4 @@
-/*! epg-focus v1.1.3 | (c) epg focus system |by XUZHEN https://gitee.com/ywwxly/epg-focus /license */
+/*! epg-focus v2.1.0 | (c) epg focus system |by XUZHEN https://gitee.com/ywwxly/epg-focus /license */
 window.runTime = null;
 /**
  * iptv聚焦构造函数
