@@ -1,6 +1,6 @@
 //服务器中映射的项目根目录，兼容天津某些盒子不正常相对路径跳转，部署时添加。
-var BaseHost = "http://202.99.114.152:32215";
-var BaseHostSD = "http://202.99.114.152:32215/SD";
+var BaseHost = "";
+var BaseHostSD = "";
 //按键事件注册
 var _keyName = "";
 var _epg = true;
