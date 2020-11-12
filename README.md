@@ -79,3 +79,34 @@
 ### 2020.11.06
 
 1. 修改md文档，版本号语义化
+
+### 2020.11.12 ^2.2.3
+
+1. - ```findFocusEle```函数
+
+        ``` 
+        /**
+        * 查找并返回目标对象
+        * @param {String/Object } tag 要查找的DOM元素或id，或元素对象的索引值
+        * @param {Array} focusList  //在focusList查找
+        * @param {String} type  //通过focusIndex查找
+        */
+
+        ```
+        函数新增```type == 'focusIndex'```通过```focusIndex```查找
+    - ```move```函数 切换组聚焦对象，时优先执行组对象绑定的方法
+2.  - 新增```onBlur```
+        ```
+        /**
+        * 设置目标对象为失焦状态
+        * @param {Object} oldEleObj  目标对象 必填
+        *
+        */
+        ```
+    - 新增```concatGroupFocus```
+        ```
+        //合并两组后自动聚焦
+        ```
+3. 修复```focusGroup```,当目标组中无可聚焦元素时,无法检索的BUG
+
+4. 按键响应回调用于响应媒体事件的全局函数```mediaEvent```

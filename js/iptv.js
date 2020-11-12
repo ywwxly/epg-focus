@@ -1,4 +1,4 @@
-/*! epg-focus v2.1.0 | (c) epg focus system |by XUZHEN https://gitee.com/ywwxly/epg-focus /license */
+/*! epg-focus v2.2.3 | (c) epg focus system | by XUZHEN https://gitee.com/ywwxly/epg-focus /license */
 window.runTime = null;
 /**
  * iptv聚焦构造函数
@@ -26,7 +26,7 @@ function iptvFocus(options) {
     this.init();
 }
 iptvFocus.prototype = {
-    version: "2.1.0", //版本号
+    version: "2.2.3", //版本号
     focusClassScale: 1.1, //聚焦class scale放大比例
     visualMargin: 30, //可视边距大小  px
     viewEle: evm.$("view") || document.body, //可视移动元素
@@ -200,8 +200,9 @@ iptvFocus.prototype = {
      * 查找并返回目标对象
      * @param {String/Object } tag 要查找的DOM元素或id，或元素对象的索引值
      * @param {Array} focusList  //在focusList查找
+     * @param {String} type  //通过focusIndex查找
      */
-    findFocusEle: function (tag, focusList) {
+    findFocusEle: function (tag, focusList, type) {
         var toEle = null;
         var ele = null;
         focusList = focusList || this._foucsList;
@@ -219,9 +220,16 @@ iptvFocus.prototype = {
                 }
             } else {
                 //判断聚焦元素对象的索引值
-                if (tag == item.index) {
-                    toEle = item;
-                    break;
+                if (type == "focusIndex") {
+                    if (tag == item.focusIndex) {
+                        toEle = item;
+                        break;
+                    }
+                } else {
+                    if (tag == item.index) {
+                        toEle = item;
+                        break;
+                    }
                 }
             }
 
@@ -233,12 +241,13 @@ iptvFocus.prototype = {
      */
     focusGroup: function (group, focusIndex) {
         // console.log(this._groupList);
-        //优先聚焦指定
-        if (focusIndex) {
-            this.onFocus(this.findFocusEle(focusIndex, this._groupList[group].foucsList));
-        } else {
-            this.onFocus(this._groupList[group].defaultFocus || this._groupList[group].foucsList[0]);
-        }
+        //优先聚焦指定 当目标组中有可聚焦元素时
+        if (this._groupList[group] && this._groupList[group].foucsList.length > 0)
+            if (focusIndex) {
+                this.onFocus(this.findFocusEle(focusIndex, this._groupList[group].foucsList));
+            } else {
+                this.onFocus(this._groupList[group].defaultFocus || this._groupList[group].foucsList[0]);
+            }
     },
     /**
      * 初始化
@@ -246,15 +255,14 @@ iptvFocus.prototype = {
      */
     init: function () {
         this._groupList = this.getAttributeObj("group");
+        this._foucsList = this.getAllFocusList();
         var focusIndex = evm.cookie(this.pathname);
         if (focusIndex) { //优先焦点记录
             focusIndex = focusIndex.split("-");
             this._nowEle = this.findFocusEle(focusIndex[1], this._groupList[focusIndex[0]].foucsList);
         }
         this._nowEle = this._nowEle || this._groupList[this._group].foucsList[0];
-
         this.onFocus(this._nowEle);
-        this._foucsList = this.getAllFocusList();
         //console.log(this._groupList, this._foucsList, this._nowEle);
         runTime = new Date().getTime() - runTime;
         //console.log(runTime, "----------runTime");
@@ -265,10 +273,43 @@ iptvFocus.prototype = {
      * @param {Object} oldEleObj  失焦对象 非必填 默认为上次聚焦对象
      */
     onFocus: function (newEleObj, oldEleObj) {
-        oldEleObj = oldEleObj || this._nowEle;
+        this.onBlur(oldEleObj);
         this._nowEle = newEleObj;
+        var eleFocus = newEleObj.focus;
+        this._group = newEleObj.groupName;
+        //console.log(this._group, newEleObj, "---------------this._group");
+        if (eleFocus) {
+            if (typeof eleFocus == "function") {
+                //eleFocus(newEleObj);
+                this.callFn(eleFocus, newEleObj, this._group);
+            } else {
+                evm.addClass(newEleObj.ele, eleFocus);
+            }
+        } else {
+            var groupFocus = this._groupList[this._group].focus;
+            if (groupFocus) {
+                if (typeof groupFocus == "string") {
+                    evm.addClass(newEleObj.ele, groupFocus);
+                } else {
+                    //groupFocus(newEleObj);
+                    this.callFn(groupFocus, newEleObj, this._group);
+                }
+            } else {
+                evm.addClass(newEleObj.ele, "focus_btn");
+            }
+        }
+        // runTime = new Date().getTime() - runTime;
+        // console.log(runTime, "----------moveE");
+    },
+    /**
+     * 设置目标对象为失焦状态
+     * @param {Object} oldEleObj  目标对象 必填
+     *
+     */
+    onBlur: function (oldEleObj) {
+        oldEleObj = oldEleObj || this._nowEle;
         var oldGroup = oldEleObj.groupName;
-        var eleBlur = oldEleObj.blur;
+        var eleBlur = typeof oldEleObj.focus != "function" ? oldEleObj.focus : oldEleObj.blur;
         if (oldEleObj) {
             //console.log(oldEleObj, "----------------------------oldEleObj");
             if (eleBlur) {
@@ -298,31 +339,6 @@ iptvFocus.prototype = {
             }
             this.oldEleObj = oldEleObj;
         }
-        var eleFocus = newEleObj.focus;
-        this._group = newEleObj.groupName;
-        //console.log(this._group, newEleObj, "---------------this._group");
-        if (eleFocus) {
-            if (typeof eleFocus == "function") {
-                //eleFocus(newEleObj);
-                this.callFn(eleFocus, newEleObj, this._group);
-            } else {
-                evm.addClass(newEleObj.ele, eleFocus);
-            }
-        } else {
-            var groupFocus = this._groupList[this._group].focus;
-            if (groupFocus) {
-                if (typeof groupFocus == "string") {
-                    evm.addClass(newEleObj.ele, groupFocus);
-                } else {
-                    //groupFocus(newEleObj);
-                    this.callFn(groupFocus, newEleObj, this._group);
-                }
-            } else {
-                evm.addClass(newEleObj.ele, "focus_btn");
-            }
-        }
-        // runTime = new Date().getTime() - runTime;
-        // console.log(runTime, "----------moveE");
     },
     saveFocusIndex: function (obj) {
         obj = obj || this._nowEle;
@@ -433,7 +449,7 @@ iptvFocus.prototype = {
             //console.log(pref, min, pDvalue, mDvalue, "----------for");
         }
         // console.log(pref, min, pDvalue, mDvalue, "----------move");
-        if (pref || min) { //目标group中该方向无可聚焦元素
+        if ((pref || min) && (pref != this._nowEle && min != this._nowEle)) { //目标group中该方向无可聚焦元素 并且不是自身
             var oldEle = this._nowEle;
             if (keyDir === "left" || keyDir === "right") {
                 this._nowEle = min; //优先显示上下离地近的
@@ -448,12 +464,24 @@ iptvFocus.prototype = {
             // console.log(this._groupList[this._group][keyDir], "-----------this._groupList[this._group][keyDir]");
             if (this._groupList[this._group][keyDir]) {
                 var groupName = this._groupList[this._group][keyDir];
-                this.move(keyDir, this._groupList[this._group].foucsList.concat(this._groupList[groupName].foucsList));
+                if (typeof groupName == "function") {
+                    //优先执行组对象绑定的方法
+                    this.callFn(this._groupList[this._nowEle.groupName][keyDir], this._nowEle, this._nowEle.groupName);
+                } else {
+                    this.concatGroupFocus(groupName, keyDir);
+                }
             } else if (type != "noGroup" && !this._hasLayer) { //是否有弹窗 全局搜索
                 this.move(keyDir, this._foucsList, "noGroup");
             }
             return;
         }
+    },
+    //合并两组后自动聚焦
+    concatGroupFocus: function (groupName, keyDir) {
+        console.log(groupName, keyDir, "concatGroupFocus");
+        console.log(this._groupList[groupName].foucsList);
+        if (this._groupList[groupName] && this._groupList[groupName].foucsList.length > 0)
+            this.move(keyDir, this._groupList[this._group].foucsList.concat(this._groupList[groupName].foucsList));
     },
     //可视区域自适应
     moveScroll: function (keyDir, oldEle) {
@@ -683,6 +711,9 @@ window.keyevent = function () {
             }
             break;
         default:
+            if (typeof mediaEvent == "function") {
+                mediaEvent(_keyName);
+            }
             break;
     }
 };
