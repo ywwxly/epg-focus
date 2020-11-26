@@ -1,4 +1,4 @@
-/*! epg-focus v2.3.0 | (c) epg focus system | by XUZHEN https://gitee.com/ywwxly/epg-focus /license */
+/*! epg-focus v2.3.1 | (c) epg focus system | by XUZHEN https://gitee.com/ywwxly/epg-focus /license */
 window.runTime = null;
 /**
  * iptv聚焦构造函数
@@ -23,6 +23,7 @@ function iptvFocus(options) {
     contentName = pathname.slice(0, pathname.indexOf(".")); //去除.html
     this.pathname = contentName; //当前页焦点记录标识
     this.animateHas = options.animateHas;
+    this.initNoFocus = options.initNoFocus;
     // if (options.animateHas) {
     //     try {
     //         //css不支持transition 使用
@@ -34,7 +35,7 @@ function iptvFocus(options) {
     this.init();
 }
 iptvFocus.prototype = {
-    version: "^2.3.0", //版本号
+    version: "^2.3.1", //版本号
     focusClassScale: 1.1, //聚焦class scale放大比例
     visualMargin: 30, //可视边距大小  px
     viewEle: evm.$("view") || document.body, //可视移动元素
@@ -47,6 +48,7 @@ iptvFocus.prototype = {
     oldEleObj: null, //上次聚焦对象 
     defaultFocus: null, //临时保存组的默认聚焦对象
     animateHas: false, //js实现变速移动动画 默认关闭
+    initNoFocus: false, //初始化时不自动聚焦
     //获取目标属性的数组
     getAttributeEle: function (Attribute, rootEles, groupName, TagName) {
         rootEle = (rootEles || document).getElementsByTagName(TagName || "*");
@@ -271,7 +273,8 @@ iptvFocus.prototype = {
             this._nowEle = this.findFocusEle(focusIndex[1], this._groupList[focusIndex[0]].foucsList);
         }
         this._nowEle = this._nowEle || this._groupList[this._group].foucsList[0];
-        this.onFocus(this._nowEle);
+        if (!this.initNoFocus)
+            this.onFocus(this._nowEle);
         //console.log(this._groupList, this._foucsList, this._nowEle);
         runTime = new Date().getTime() - runTime;
         //console.log(runTime, "----------runTime");
