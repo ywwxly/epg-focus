@@ -1,4 +1,4 @@
-/*! epg-focus v2.3.1 | (c) epg focus system | by XUZHEN https://gitee.com/ywwxly/epg-focus /license */
+/*! epg-focus v2.3.2 | (c) epg focus system | by XUZHEN https://gitee.com/ywwxly/epg-focus /license */
 window.runTime = null;
 /**
  * iptv聚焦构造函数
@@ -35,7 +35,8 @@ function iptvFocus(options) {
     this.init();
 }
 iptvFocus.prototype = {
-    version: "^2.3.1", //版本号
+    version: "^2.3.2", //版本号
+    keyEvent: true, //响应按键开关 默认true打开
     focusClassScale: 1.1, //聚焦class scale放大比例
     visualMargin: 30, //可视边距大小  px
     viewEle: evm.$("view") || document.body, //可视移动元素
@@ -778,6 +779,11 @@ window.keyevent = function () {
     var keyobj = iptv;
     if (!keyobj) {
         return;
+    } else {
+        if (!keyobj.keyEvent && ["KEY_LEFT", "KEY_RIGHT", "KEY_DOWN", "KEY_UP"].indexOf(_keyName) > -1) {
+            //屏蔽方向键 保留虚拟事件
+            _keyName = "NOTEVENT";
+        }
     }
     switch (_keyName) {
         case "KEY_LEFT":
