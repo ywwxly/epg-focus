@@ -1,4 +1,4 @@
-/*! epg-focus v2.3.2 | (c) epg focus system | by XUZHEN https://gitee.com/ywwxly/epg-focus /license */
+/*! epg-focus v2.3.3 | (c) epg focus system | by XUZHEN https://gitee.com/ywwxly/epg-focus /license */
 window.runTime = null;
 /**
  * iptv聚焦构造函数
@@ -35,7 +35,7 @@ function iptvFocus(options) {
     this.init();
 }
 iptvFocus.prototype = {
-    version: "^2.3.2", //版本号
+    version: "^2.3.3", //版本号
     keyEvent: true, //响应按键开关 默认true打开
     focusClassScale: 1.1, //聚焦class scale放大比例
     visualMargin: 30, //可视边距大小  px
@@ -478,12 +478,12 @@ iptvFocus.prototype = {
         var pDvalue, mDvalue, pref, min;
         foucsList = (foucsList || this._groupList[this._group].foucsList);
         for (var i = 0; i < foucsList.length; i++) {
-            item = foucsList[i];
-            var rule = this.rules(this._nowEle, item, pDvalue, mDvalue, keyDir);
+            var items = foucsList[i];
+            var rule = this.rules(this._nowEle, items, pDvalue, mDvalue, keyDir);
             pDvalue = rule.pDvalue;
             mDvalue = rule.mDvalue;
-            rule.pref && (pref = item);
-            rule.min && (min = item);
+            rule.pref && (pref = items);
+            rule.min && (min = items);
         }
         return {
             hasMin: (pref || min) && (pref != this._nowEle && min != this._nowEle),

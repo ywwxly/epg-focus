@@ -35,7 +35,7 @@ var _isArray = function (obj) {
 /*获取元素的纵坐标*/
 function getTop(e) {
     var offset = e.offsetTop;
-    if (e.offsetParent != null) {
+    if (e.offsetParent) {
         offset += getTop(e.offsetParent);
     }
     return offset;
@@ -43,7 +43,7 @@ function getTop(e) {
 /*获取元素的横坐标*/
 function getLeft(e) {
     var offset = e.offsetLeft;
-    if (e.offsetParent != null) {
+    if (e.offsetParent) {
         offset += getLeft(e.offsetParent);
     }
     return offset;
@@ -462,74 +462,57 @@ var evm = {
         var expdate = new Date();
         expdate.setTime(expdate.getTime() - (86400 * 1000 * 1));
         document.cookie = name + "=" + ";expires=" + expdate.toGMTString() + ";path=" + (paths ? paths : ("/")) + ";";
-    },
+    }
 };
-var hasJD = "";
-//聚焦函数
-function addFocusEvent(aEle) {
-    // console.log(window.event);
+//Object.keys()兼容ES3
+if (!Object.keys) {
+    Object.keys = (function () {
+        var hasOwnProperty = Object.prototype.hasOwnProperty,
+            hasDontEnumBug = !({
+                toString: null
+            }).propertyIsEnumerable('toString'),
+            dontEnums = [
+                'toString',
+                'toLocaleString',
+                'valueOf',
+                'hasOwnProperty',
+                'isPrototypeOf',
+                'propertyIsEnumerable',
+                'constructor'
+            ],
+            dontEnumsLength = dontEnums.length;
 
-    var index = parseInt(aEle.id.split("_")[1]);
-    var tag = aEle.parentNode;
-    var childrenEle = aEle.children[0];
-    //if (typeof Authentication != "object") {
-    if (typeof DIYFocusEvent === "function") {
-        DIYFocusEvent(tag, index, childrenEle);
-    } else {
-        evm.addClass(tag, "focus_btn");
-    }
-    // }
-    // move(parseInt(aEle.getAttribute("id").split("_")[1]));
-    hasJD = "focus";
-    return;
-}
+        return function (obj) {
+            if (typeof obj !== 'object' && typeof obj !== 'function' || obj === null) throw new TypeError('Object.keys called on non-object');
 
-function addBlurEvent(aEle) {
-    if (hasJD == "focus") {
-        var index = parseInt(aEle.id.split("_")[1]);
+            var result = [];
 
+            for (var prop in obj) {
+                if (hasOwnProperty.call(obj, prop)) result.push(prop);
+            }
 
-        var tag = aEle.parentNode;
-        var childrenEle = aEle.children[0];
-        console.log();
-        //if (typeof Authentication != "object") {
-        if (typeof DIYBlurEvent === "function") {
-            DIYBlurEvent(tag, index, childrenEle);
-        } else {
-            evm.removeClass(tag, "focus_btn");
-        }
-        // }
-        // evm.setDebug("Obj.addBlurEvent:" + aEle.id);
-    }
-    return;
-
-}
-
-function addClickEvent(tag) {
-    var index = parseInt(tag.id.split("_")[1]);
-    evm.setDebug("Obj.onclick:" + tag.id);
-    if (typeof DIYClickEvent === "function") {
-        DIYClickEvent(index);
-    } else {
-        clickTo(index);
-    }
-}
-
-window.onload = function () {
-    if (typeof Authentication != "object") {
-        document.body.onmouseover = function (keyEvent) {
-            keyEvent = keyEvent ? keyEvent : window.event;
-            var tag = (keyEvent.srcElement || keyEvent.target).parentNode;
-            tag.focus();
+            if (hasDontEnumBug) {
+                for (var i = 0; i < dontEnumsLength; i++) {
+                    if (hasOwnProperty.call(obj, dontEnums[i])) result.push(dontEnums[i]);
+                }
+            }
+            return result;
         };
-    }
-    if (typeof loadEnd === "function") {
-        loadEnd();
-    }
-    if (typeof loadEnd1 === "function") {
-        loadEnd1();
-    }
-    if (typeof loadEnd2 === "function") {
-        loadEnd2();
-    }
-};
+    })();
+}
+
+//Object.values()兼容
+if (!Object.values) {
+    Object.values = function (obj) {
+        if (obj !== Object(obj))
+            throw new TypeError('Object.values called on a non-object');
+        var val = [],
+            key;
+        for (key in obj) {
+            if (Object.prototype.hasOwnProperty.call(obj, key)) {
+                val.push(obj[key]);
+            }
+        }
+        return val;
+    };
+}
