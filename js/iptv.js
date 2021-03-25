@@ -1,5 +1,6 @@
 /*! epg-focus v2.3.3 | (c) epg focus system | by XUZHEN https://gitee.com/ywwxly/epg-focus /license */
 window.runTime = null;
+window.iptv = null;
 /**
  * iptv聚焦构造函数
  *   isfocus="" 聚焦的class 默认聚焦元素: default-focus 优先级 isfocus>group>全局className;
@@ -10,7 +11,7 @@ window.runTime = null;
  * }
  * 
  */
-function iptvFocus(options) {
+window.iptvFocus = function (options) {
     options = options || {};
     this.viewEle = options.viewEle || this.viewEle; //可视移动元素
     this._group = options._group || this._group; //默认聚焦组
@@ -33,7 +34,7 @@ function iptvFocus(options) {
     //     }
     // }
     this.init();
-}
+};
 iptvFocus.prototype = {
     version: "^2.3.3", //版本号
     keyEvent: true, //响应按键开关 默认true打开
@@ -54,41 +55,42 @@ iptvFocus.prototype = {
     getAttributeEle: function (Attribute, rootEles, groupName, TagName) {
         rootEle = (rootEles || document).getElementsByTagName(TagName || "*");
         var focusEle = [];
-        var rootEleObj = Object.values(rootEle);
+        var rootEleObj = rootEle;
         var groupFocusIndex = 0;
         for (var index = 0; index < rootEleObj.length; index++) {
             var item = rootEleObj[index];
-            if (item.nodeType == 1) {
-                if (item.hasAttribute(Attribute)) { //查找可聚焦元素并添加
-                    // var isLayer = item.hasAttribute("isLayer");
-                    var eventString = item.getAttribute(Attribute);
-                    var obj = {
-                        index: index,
-                        focusIndex: groupFocusIndex, //该组下聚焦索引值
-                        ele: item,
-                        focus: eventString,
-                        groupName: groupName,
-                        // isLayer: isLayer
-                    };
-                    if (eventString) {
-                        var eventJavaScript = stringToJavascript(eventString);
-                        if (typeof eventJavaScript == "function") {
-                            obj.focus = eventJavaScript;
-                        }
+            //中兴BV310 兼容性问题
+            // if (item.nodeType == 1) {
+            if (item.hasAttribute(Attribute)) { //查找可聚焦元素并添加
+                // var isLayer = item.hasAttribute("isLayer");
+                var eventString = item.getAttribute(Attribute);
+                var obj = {
+                    index: index,
+                    focusIndex: groupFocusIndex, //该组下聚焦索引值
+                    ele: item,
+                    focus: eventString,
+                    groupName: groupName
+                    // isLayer: isLayer
+                };
+                if (eventString) {
+                    var eventJavaScript = stringToJavascript(eventString);
+                    if (typeof eventJavaScript == "function") {
+                        obj.focus = eventJavaScript;
                     }
-                    if (item.hasAttribute("default-focus")) { //获取默认聚焦对象
-                        if (!this._nowEle) {
-                            this._nowEle = obj;
-                        }
-                        //临时保存组的默认聚焦对象
-                        this.defaultFocus = obj;
-                    }
-                    //获取绑定的虚拟事件
-                    this.getEventAttribute(item, obj, ["blur", "left", "right", "up", "down", "click", "back"]);
-                    focusEle.push(obj);
-                    groupFocusIndex++;
                 }
+                if (item.hasAttribute("default-focus")) { //获取默认聚焦对象
+                    if (!this._nowEle) {
+                        this._nowEle = obj;
+                    }
+                    //临时保存组的默认聚焦对象
+                    this.defaultFocus = obj;
+                }
+                //获取绑定的虚拟事件
+                this.getEventAttribute(item, obj, ["blur", "left", "right", "up", "down", "click", "back"]);
+                focusEle.push(obj);
+                groupFocusIndex++;
             }
+            // }
         }
         return focusEle;
     },
@@ -96,33 +98,33 @@ iptvFocus.prototype = {
     getAttributeObj: function (Attribute, TagName) {
         var rootEle = document.getElementsByTagName(TagName || "*");
         var focusEle = {};
-        var rootEleObj = Object.values(rootEle);
+        var rootEleObj = rootEle;
         for (var index = 0; index < rootEleObj.length; index++) {
             var item = rootEleObj[index];
-            if (item.nodeType == 1) {
-                if (item.hasAttribute(Attribute)) {
-                    var AttributeObj = {};
-                    var obj = {};
-                    var AttributeName = item.getAttribute(Attribute) || index;
-                    if (typeof AttributeName == "string" && AttributeName.indexOf("}") > -1) { //判断group中传递是否为对象形式
-                        AttributeObj = stringToJavascript(AttributeName); //解析为对象
-                        AttributeName = AttributeObj.name || index;
-                        getGroupEventAttribute(AttributeObj, obj, "focus");
-                        getGroupEventAttribute(AttributeObj, obj, "blur");
-                    }
-                    obj[Attribute + "Name"] = AttributeName;
-                    obj[Attribute + "Ele"] = item;
-                    obj.foucsList = this.getAttributeEle("isfocus", item, AttributeName); //获取该group下的可聚焦对象
-                    if (this.defaultFocus) {
-                        //有默认聚焦对象则保存
-                        obj.defaultFocus = this.defaultFocus;
-                        this.defaultFocus = null;
-                    }
-                    //获取绑定的虚拟事件
-                    this.getEventAttribute(item, obj, ["left", "right", "up", "down", "click", "back"]);
-                    focusEle[AttributeName] = obj;
+            // if (item.nodeType == 1) {
+            if (item.hasAttribute(Attribute)) {
+                var AttributeObj = {};
+                var obj = {};
+                var AttributeName = item.getAttribute(Attribute) || index;
+                if (typeof AttributeName == "string" && AttributeName.indexOf("}") > -1) { //判断group中传递是否为对象形式
+                    AttributeObj = stringToJavascript(AttributeName); //解析为对象
+                    AttributeName = AttributeObj.name || index;
+                    getGroupEventAttribute(AttributeObj, obj, "focus");
+                    getGroupEventAttribute(AttributeObj, obj, "blur");
                 }
+                obj[Attribute + "Name"] = AttributeName;
+                obj[Attribute + "Ele"] = item;
+                obj.foucsList = this.getAttributeEle("isfocus", item, AttributeName); //获取该group下的可聚焦对象
+                if (this.defaultFocus) {
+                    //有默认聚焦对象则保存
+                    obj.defaultFocus = this.defaultFocus;
+                    this.defaultFocus = null;
+                }
+                //获取绑定的虚拟事件
+                this.getEventAttribute(item, obj, ["left", "right", "up", "down", "click", "back"]);
+                focusEle[AttributeName] = obj;
             }
+            // }
         }
         return focusEle;
         //获取组事件
@@ -277,7 +279,7 @@ iptvFocus.prototype = {
         if (!this.initNoFocus)
             this.onFocus(this._nowEle);
         //console.log(this._groupList, this._foucsList, this._nowEle);
-        runTime = new Date().getTime() - runTime;
+        //runTime = new Date().getTime() - runTime;
         //console.log(runTime, "----------runTime");
     },
     /**
@@ -656,7 +658,7 @@ iptvFocus.prototype = {
             width: ele.offsetWidth,
             height: ele.offsetHeight,
             x: x,
-            y: y,
+            y: y
         };
         //}
     },
@@ -734,8 +736,9 @@ iptvFocus.prototype = {
  */
 function functionName(fn) {
     var ret = fn.toString();
-    ret = ret.substr('function '.length);
-    ret = ret.substr(0, ret.indexOf('('));
+    var re = /function\s*(\w*)/i;
+    var matches = re.exec(ret); //方法名
+    ret = matches[1];
     return ret;
 }
 /**
