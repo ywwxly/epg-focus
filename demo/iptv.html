@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            width: 100%;
+            height: 100%;
+        }
+
+        body {
+            padding: 0 5%;
+            width: 90%;
+            height: 90%;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-around;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        body>div {
+            color: #fff;
+
+        }
+
+        .nav {
+            justify-self: center;
+            width: 100%;
+            height: 10%;
+            display: grid;
+            grid-template-columns: repeat(4, 23.5%);
+            grid-gap: 2% 2%;
+        }
+
+        .column {
+            width: 100%;
+            height: 20%;
+            display: grid;
+            grid-template-columns: repeat(4, 23.5%);
+            grid-gap: 2% 2%;
+        }
+
+        .column1 {
+            grid-template-columns: repeat(4, 23.5%);
+        }
+
+        .focus_btn {
+            box-shadow: 0 0 30px 15px #e2831a;
+            transform: scale(1.1);
+        }
+
+        .index_focus {
+            box-shadow: 0 0 30px 15px #4f1ae2;
+        }
+
+        .nav-focus {
+            box-shadow: 0 0 30px 15px #e21a85;
+        }
+
+        #layer {
+            padding: 2% 8%;
+            width: 85%;
+            height: 93%;
+            background-color: #00000088;
+            display: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+
+            /* position: fixed; */
+        }
+
+        .focus-div {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .MoveScroll-div {
+            float: left;
+            margin-left: 5%;
+            margin-bottom: 20px;
+            width: 200px;
+            height: 300px;
+        }
+    </style>
+</head>
+
+<body>
+    <p>请使用键盘操作</p>
+    <h3>group自定义聚焦/失焦</h3>
+    <div class="nav" group="{name:'nav',focus:'changeImg',blur:'blurImg'}" @down="column">
+        <div isfocus class="focus-div" style="background-color: #5f7712;">
+            <p>1</p>
+        </div>
+        <div isfocus class="focus-div" style="background-color: #776412;">
+            <p>2</p>
+        </div>
+        <div isfocus class="focus-div" style="background-color: #267712;">
+            <p>3</p>
+        </div>
+        <div id="test-left-id" isfocus class="focus-div" style="background-color: #125f77;">
+            <p>4</p>
+        </div>
+    </div>
+    <h3>group默认聚焦/失焦</h3>
+    <div class="column column1" group="column" @up="nav" @down="column2" @click="columnClick">
+        <div isfocus @left="test-left-id" class="focus-div" style="background-color: #5f7712;">
+            <p>自定义不同方向移动（可聚焦元素索引/id）</p>
+        </div>
+        <div isfocus class="focus-div" default-focus style="background-color: #776412;">
+            <p>2</p>
+        </div>
+        <div isfocus="index_focus" class="focus-div" style="background-color: #267712;">
+            <p>单独元素自定义聚焦class(index_focus为类名)</p>
+        </div>
+        <div isfocus="changeImg" class="focus-div" @blur="blurImg" style="background-color: #125f77;">
+            <p>单独元素自定义聚焦/失焦方法（此时changeImg为方法）</p>
+        </div>
+        <div isfocus class="focus-div" style="background-color: #5f7712;">
+            <p>5</p>
+        </div>
+        <div id="move-id" isfocus class="focus-div" style="background-color: #776412;" @click="MoveScrollClick">
+            <p>点击展示弹窗（超出可视范围自动移动）</p>
+        </div>
+        <div isfocus class="focus-div" style="background-color: #125f77;" @click="navRecommendClick">
+            <p>点击展示弹窗（禁止移动）</p>
+        </div>
+    </div>
+    <h3>自定义翻页</h3>
+    <div class="column" group="column2" @up="column" @click="home._enter">
+        <div isfocus class="focus-div" style="background-color: #5f7712;" @left="left">
+            <p>1</p>
+        </div>
+        <div isfocus class="focus-div" style="background-color: #776412;">
+            <p>3</p>
+        </div>
+        <div isfocus class="focus-div" style="background-color: #267712;">
+            <p>6</p>
+        </div>
+        <div isfocus class="focus-div" style="background-color: #267712;" @right="right">
+            <p>4</p>
+        </div>
+    </div>
+    <div class="column" id="layer" group="layer" @back="hiddenDiv">
+        <div isfocus class="focus-div" style="background-color: #5f7712;">
+            <p>1</p>
+        </div>
+        <div isfocus class="focus-div" style="background-color: #776412;">
+            <p>2</p>
+        </div>
+        <div isfocus class="focus-div" style="background-color: #267712;">
+            <p>3</p>
+        </div>
+        <div isfocus class="focus-div" style="background-color: #125f77;">
+            <p>4</p>
+        </div>
+        <div isfocus class="focus-div" style="background-color: #5f7712;">
+            <p>5</p>
+        </div>
+        <div isfocus class="focus-div" style="background-color: #776412;">
+            <p>6</p>
+        </div>
+        <div isfocus class="focus-div" style="background-color: #267712;">
+            <p>7</p>
+        </div>
+        <div isfocus class="focus-div" @click="hiddenDiv" style="background-color: #125f77;">
+            <p>返回键/点击这里关闭弹窗</p>
+        </div>
+    </div>
+    <div id="MoveScroll" style="position: absolute; left: 0;top:0;
+        height: 100%;width: 101%;background-color: #000000a6;display: none;">
+        <div group="MoveScroll" @back="hiddenMoveScroll" style="position: absolute; left: 0;top: 50%;width: 150%;">
+            <div isfocus class="MoveScroll-div" style="background-color: #5f7712;">
+                <p>1</p>
+            </div>
+            <div isfocus class="MoveScroll-div" style="background-color: #776412;">
+                <p>2</p>
+            </div>
+            <div isfocus class="MoveScroll-div" style="background-color: #267712;">
+                <p>3</p>
+            </div>
+            <div isfocus class="MoveScroll-div" style="background-color: #125f77;">
+                <p>4</p>
+            </div>
+            <div isfocus class="MoveScroll-div" style="background-color: #5f7712;">
+                <p>5</p>
+            </div>
+            <div isfocus class="MoveScroll-div" style="background-color: #776412;">
+                <p>6</p>
+            </div>
+            <div isfocus class="MoveScroll-div" style="background-color: #267712;">
+                <p>7</p>
+            </div>
+            <div isfocus class="MoveScroll-div" @click="hiddenMoveScroll" style="background-color: #125f77;">
+                <p>返回键/点击这里关闭弹窗</p>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+<script src="/js/iptv.js"></script>
+<script>
+    function navClick(ele) {
+        console.log(ele, "-------nav");
+    }
+    // group="column" 整组默认点击
+    function columnClick(ele) {
+        console.log(ele, ele.focusIndex, column[ele.focusIndex]);
+    }
+    // 弹窗cookie逻辑请自行清除处理
+    function navRecommendClick(ele) {
+        console.log(ele, "-------navRecommendClick");
+        document.getElementById("layer").style.display = "grid";
+        iptv.isMoveScroll = false; //超出可视范围自动移动禁止移动
+        iptv.focusGroup("layer");
+    }
+    // 隐藏弹窗
+    function hiddenDiv() {
+        document.getElementById("layer").style.display = "none";
+        iptv.isMoveScroll = true; //打开超出可视范围自动移动
+        iptv.focusGroup("column", 12); //指定聚焦组内元素的index
+    }
+    //展示超出可视范围自动移动弹窗
+    function MoveScrollClick(ele) {
+        console.log(ele, "-------navRecommendClick");
+        document.getElementById("MoveScroll").style.display = "block";
+        iptv.focusGroup("MoveScroll");
+    }
+    //隐藏超出可视范围自动移动弹窗
+    function hiddenMoveScroll() {
+        document.getElementById("MoveScroll").style.display = "none";
+        iptv.focusGroup("column", 'move-id'); //指定聚焦组内元素的id
+    }
+    //自定义聚焦
+    function changeImg(ele) {
+        console.log(ele, ele.ele, "------------自定义聚焦");
+        ele.ele.style.backgroundColor = "#260712"
+    }
+    //自定义失焦
+    function blurImg(ele) {
+        console.log(ele, ele.ele, "------------自定义失焦");
+        ele.ele.style.backgroundColor = "#125f77"
+    }
+    var column = [1, 3, 6, 4, 5, 6, 7, 8, 9, 10, 11];
+    //自定义左翻页
+    function left(e) {
+        console.log(e);
+        home._trun("left");
+    }
+    //自定义右翻页
+    function right(e) {
+        console.log(e);
+        home._trun("right");
+    }
+
+    var home = {
+        _data: column,
+        _pages: 0,
+        _pagesCount: 4,
+        _trun: function (dir) {
+            //this._progress(); //渲染页码
+            var videoData = column;
+            var pages = videoData.length % this._pagesCount == 0 ? parseInt(videoData.length / this
+                ._pagesCount) : parseInt(videoData.length / this._pagesCount) + 1;
+            console.log(this._pages, pages);
+            if (dir == "right" && this._pages < pages - 1) {
+                this._pages++;
+                iptv.onFocus(iptv._groupList[iptv._nowEle.groupName].foucsList[0])
+            } else if (dir == "left" && this._pages > 0) {
+                this._pages--;
+            }
+            var length = this._length();
+            for (var i = 0; i < length; i++) {
+                var divEle = iptv._groupList[iptv._nowEle.groupName].foucsList[i].ele;
+                var pEle = divEle.children[0];
+                var gameName = videoData[(this._pages * this._pagesCount) + i];
+                console.log(i, divEle.children, gameName);
+                pEle.innerHTML = gameName;
+                var x = length;
+                while (x < this._pagesCount) {
+                    iptv._groupList[iptv._nowEle.groupName].foucsList[x].ele.style.display = "none";
+                    x++;
+                }
+                divEle.style.display = "block";
+            }
+        },
+        _progress: function () {
+            var videoData = this._data;
+            var pages = videoData.length % this._pagesCount == 0 ? parseInt(videoData.length / this
+                ._pagesCount) : parseInt(videoData.length / this._pagesCount) + 1;
+            if (pages == 0) {
+                evm.hidden("progress");
+            } else {
+                evm.visible("progress");
+                evm.$("progress").innerHTML = "" + parseInt(this._pages + 1) + " / " + pages;
+            }
+        },
+        //本页长度
+        _length: function () {
+            var videoData = column;
+            var length;
+            if (videoData.length > 0) {
+                length = (videoData.length % this._pagesCount == 0) || (videoData.length / ((this._pages + 1) *
+                    this._pagesCount) >= 1) ? this._pagesCount : videoData.length % this._pagesCount;
+            } else {
+                length = 0;
+            }
+            return length;
+        },
+        _enter: function (ele) {
+            // console.log(home._data, home._pages, home._pagesCount, ele.focusIndex);
+            var gameName = home._data[(home._pages * home._pagesCount) + ele.focusIndex];
+            console.log(gameName,
+                "-------------gameName");
+        },
+    };
+    var iptv = new iptvFocus({
+        hasLayer: true, //是否有弹窗 有弹窗则必须设置group
+        focusClassScale: 1.1,
+        visualMargin: 20,
+    });
+</script>
+
+
+
+</html>
