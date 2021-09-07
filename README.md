@@ -36,21 +36,26 @@ iptv上各种逻辑基本可以实现 可制作单页面应用
 
 - 示例：  
 
-    ```
+    ```html
     <div id="recommend" group="{name:'recommend',focus:'recommend._focus',blur:'recommend._blur'}" @up="nav"  @click="recommend._enter">
     ```
 
-    ```
+    ```html
     <div isfocus class="nav_btn" @click="navRecommendClick">
     ```
 
-    ```
+    ```javascript
     var iptv = new iptvFocus({ focusClassScale: 1.1, //聚焦class scale放大比例 其中聚焦class 有scale放大visualMargin: 30, //可视边距大小  px viewEle: evm.$("viwe"), //可视移动元素 });
     ```
+
 ### 示例
 
-    script引入：
-`<script src="/js/iptv.js"></script>`
+ script引入：
+
+``` html
+
+<script src="/js/iptv.js"></script>
+```
 
 可在`group`，`isfocus`自定义聚焦css类、方法
 优先级:isfocus自定义方法>isfocus自定义css类>group自定义方法>group自定义css类>默认聚焦css类名`focus_btn`
@@ -58,8 +63,10 @@ iptv上各种逻辑基本可以实现 可制作单页面应用
 原则上超出屏幕元素只在单一方向（纵向/横向），demo演示为了方便，同时展示了两种方向。
 
 #### 1. 不指定聚焦组 默认聚焦组名称为`no`
+
 - html
-```
+
+``` html
   <div class="nav">
         <div isfocus class="focus-div" style="background-color: #5f7712;">
             <p>1</p>
@@ -75,13 +82,18 @@ iptv上各种逻辑基本可以实现 可制作单页面应用
         </div>
   </div>
 ```
+
 - js
-```
+
+``` javascript
  var iptv = new iptvFocus();
 ```
+
 #### 2. 指定聚焦组 指定聚焦css类
+
 - html
-```
+
+``` html
  <div id="nav" group="{name:'nav',focus:'nav-focus'}" @down="recommend" @click="nav._enter" class="posit"
             @onFocus="onNavFocus">
             <div id="nav-img-0" @right="nav-img-1" class="posit nav-img" isfocus alt="">栏目1</div>
@@ -92,17 +104,17 @@ iptv上各种逻辑基本可以实现 可制作单页面应用
             <div id="nav-img-3" class="posit nav-img" isfocus alt="">栏目4</div>
 </div>
 ```
+
 - js
-```
+
+``` javascript
 var iptv = new iptvFocus({
 	_group: "nav",//要与html中的默认组名称对应
 	visualMargin: 50,
  });
 ```
 
-
-
-可聚焦元素对象
+#### 可聚焦元素对象
 
 |  key | value  |  描述 |
 | :------------ | :------------ | :------------ |
@@ -112,9 +124,9 @@ var iptv = new iptvFocus({
 | groupName  |  `String`  | 当前所属组名称  |
 | index  |  `Number` | 全局可聚焦对象索引  |
 
-
 3. 根据实际功能需求自行调整,功能演示详情请看demo
 
+------------
 ## API
 
 [TOC]
@@ -136,12 +148,9 @@ var iptv = new iptvFocus({
 |  animateHas |  是否开启js实现变速移动动画 | false  |
 |  initNoFocus |  初始化时不自动聚焦 | false  |
 
-
 ------------
 
-
 ### `findFocusEle(tag, focusList, type)` 查找并返回目标对象
-
 
 - Parameters:
 
@@ -155,6 +164,7 @@ return:
 可聚焦对象
 
 ### `focusGroup(group, focusIndex)` 切换不同组对象聚焦 主要用于弹窗切换
+
 - Parameters:
 
 |  Name | 描述  |  类型 | 必填| 可选值 |
@@ -167,6 +177,7 @@ iptv聚焦构造函数 isfocus="" 聚焦的class 默认聚焦元素: default-foc
 ### `resetFocus` 重新获取当前可聚焦元素
 
 ### `onFocus` 设置目标对象为聚焦状态
+
 - Parameters:
 
 |  Name | 描述  |  类型 | 必填| 可选值 |
@@ -184,6 +195,7 @@ iptv聚焦构造函数 isfocus="" 聚焦的class 默认聚焦元素: default-foc
 ### `onBlur` 设置目标对象为失焦状态
 
 ### `_dirKey` 指定移动方向或方法
+
 - Parameters:
 
 |  Name | 描述  |  类型 | 必填| 可选值 |
@@ -202,6 +214,7 @@ iptv聚焦构造函数 isfocus="" 聚焦的class 默认聚焦元素: default-foc
 
 
 ### `concatGroupFocus` 合并指定聚焦组后自动聚焦
+
 - Parameters:
 
 |  Name | 描述  |  类型 | 必填| 可选值 |
@@ -271,6 +284,7 @@ iptv聚焦构造函数 isfocus="" 聚焦的class 默认聚焦元素: default-foc
 | path  |  要保存的路径 默认：/ | String  | false | - |
 
 ### `keyEvents` 按键响应函数
+
 - Parameters:
 
 |  Name | 描述  |  类型 | 必填| 可选值 |
@@ -285,8 +299,10 @@ iptv聚焦构造函数 isfocus="" 聚焦的class 默认聚焦元素: default-foc
 | :------------ | :------------ | :------------ |
 | mediaEvent  |  除上述键值外的方法 | 详见源码  |
 
+------------
 
 ## 更新记录
+
 ### 2020.7.20
 
 1. 增加弹窗```hasLayer```的区分，有弹窗时```group```必设置
