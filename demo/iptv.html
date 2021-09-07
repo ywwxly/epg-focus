@@ -98,6 +98,7 @@
 
 <body>
     <p>请使用键盘操作</p>
+    <p>机顶盒EPG环境不支持本页面css布局（grid，flex），仅作功能示例（home.html可以在EPG环境运行）；方向键移动,回车键（确定），回格键（返回）</p>
     <h3>group自定义聚焦/失焦</h3>
     <div class="nav" group="{name:'nav',focus:'changeImg',blur:'blurImg'}" @down="column">
         <div isfocus class="focus-div" style="background-color: #5f7712;">
@@ -131,13 +132,13 @@
             <p>5</p>
         </div>
         <div id="move-id" isfocus class="focus-div" style="background-color: #776412;" @click="MoveScrollClick">
-            <p>点击展示弹窗（超出可视范围自动移动）</p>
+            <p>回车键展示弹窗（超出可视范围自动移动）</p>
         </div>
         <div isfocus class="focus-div" style="background-color: #125f77;" @click="navRecommendClick">
-            <p>点击展示弹窗（禁止移动）</p>
+            <p>回车键展示弹窗（禁止移动）</p>
         </div>
     </div>
-    <h3>自定义翻页</h3>
+    <h3>左右方向键自定义翻页</h3>
     <div class="column" group="column2" @up="column" @click="home._enter">
         <div isfocus class="focus-div" style="background-color: #5f7712;" @left="left">
             <p>1</p>
@@ -175,7 +176,7 @@
             <p>7</p>
         </div>
         <div isfocus class="focus-div" @click="hiddenDiv" style="background-color: #125f77;">
-            <p>返回键/点击这里关闭弹窗</p>
+            <p>返回键/回格键,回车键这里关闭弹窗</p>
         </div>
     </div>
     <div id="MoveScroll" style="position: absolute; left: 0;top:0;
@@ -203,7 +204,7 @@
                 <p>7</p>
             </div>
             <div isfocus class="MoveScroll-div" @click="hiddenMoveScroll" style="background-color: #125f77;">
-                <p>返回键/点击这里关闭弹窗</p>
+                <p>返回键/回格键,回车键这里关闭弹窗</p>
             </div>
         </div>
     </div>
