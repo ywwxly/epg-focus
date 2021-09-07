@@ -1,0 +1,401 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta name="page-view-size" content="1280*720">
+    <meta http-equiv="Content-Type" content="text/html;" charset="utf-8">
+    <title>大厅</title>
+    <style>
+        html,
+        body {
+            width: 1280px;
+            height: 720px;
+        }
+
+        html,
+        body,
+        div,
+        img,
+        span,
+        ul,
+        li,
+        p {
+            margin: 0;
+            padding: 0;
+        }
+
+        a {
+            outline: 0;
+        }
+
+        body {
+            background: transparent;
+            overflow: hidden;
+        }
+
+        #view {
+            position: absolute;
+            background-image: url(https://backiee.com/static/wpdb/wallpapers/1000x563/195860.jpg);
+            background-size: 100% 100%;
+            left: 0;
+            top: 0;
+            width: 1280px;
+            height: 720px;
+            overflow: hidden;
+        }
+
+        .posit {
+            position: absolute;
+        }
+
+        .float {
+            float: left;
+        }
+
+        #nav {
+            width: 1280px;
+            height: 155px;
+            z-index: 10;
+        }
+
+        .nav-img {
+            width: 150px;
+            height: 56px;
+            background-color: #04b97c;
+            border-radius: 10px;
+            text-align: center;
+            color: #ffffff;
+            font-size: 26px;
+            line-height: 56px;
+        }
+
+        #nav-img-0 {
+            left: 188px;
+            top: 47px;
+        }
+
+        #nav-img-1 {
+            left: 436px;
+            top: 47px;
+        }
+
+        #nav-img-2 {
+            left: 684px;
+            top: 47px;
+        }
+
+        #nav-img-3 {
+            left: 936px;
+            top: 47px;
+        }
+
+        #down {
+            top: 530px;
+            margin-left: 15px;
+        }
+
+        #recommend-box {
+            top: 110px;
+            left: 0px;
+            overflow: hidden;
+            width: 1280px;
+            height: 610px;
+
+        }
+
+        #recommend {
+            transition: left 0.3s ease-out;
+            -webkit-transition: left 0.3s ease-out;
+            display: none;
+            margin-top: 45px;
+            margin-left: 30px;
+
+        }
+
+        #recommend img {
+            width: 100%;
+            height: 100%;
+        }
+
+        .recommend-img-big {
+            width: 366px;
+            height: 505px;
+            overflow: hidden;
+        }
+
+        .small-box {
+            left: 796px;
+            top: 0px;
+            width: 1000px;
+        }
+
+        .recommend-img-small {
+            position: relative;
+            width: 190px;
+            height: 242px;
+            margin-bottom: 20px;
+            margin-right: 20px;
+            overflow: hidden;
+        }
+
+        .user-bottom-small-text {
+            position: absolute;
+            bottom: 0px;
+            left: 0px;
+            width: 100%;
+            font-size: 18px;
+            color: #ffffff;
+            text-align: center;
+            line-height: 30px;
+            letter-spacing: 2px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            padding-left: 5px;
+            background-color: rgba(0, 0, 0, 0.57);
+        }
+
+        #recommend-div-0 {
+            left: 15px;
+            top: 0px;
+        }
+
+        #recommend-div-1 {
+            left: 406px;
+            top: 0px;
+        }
+
+        .focus_btn {
+            margin: -5px -5px;
+            overflow: hidden;
+            border: 5px solid #18c5fa;
+            box-sizing: border-box;
+            -webkit-transform: scale(1.1, 1.1);
+            transform: scale(1.1, 1.1);
+        }
+
+        .recommend-m-focus {
+            overflow: hidden;
+            border: 5px solid #18c5fa;
+            box-sizing: border-box;
+            -webkit-transform: scale(1.1, 1.1);
+            transform: scale(1.1, 1.1);
+            z-index: 10;
+        }
+
+        .nav-focus {
+            margin: -5px -5px;
+            overflow: hidden;
+            border: 5px solid #fa9618;
+            border-radius: 15px;
+            -webkit-transform: scale(1.1, 1.1);
+            transform: scale(1.1, 1.1);
+            z-index: 10;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="view">
+        <div id="nav" group="{name:'nav',focus:'nav-focus'}" @down="recommend" @click="nav._enter" class="posit"
+            @onFocus="onNavFocus">
+            <div id="nav-img-0" class="posit nav-img" isfocus alt="">栏目1</div>
+            <div id="nav-img-1" default-focus class="posit nav-img" isfocus alt="">
+                推荐
+            </div>
+            <div id="nav-img-2" class="posit nav-img" isfocus alt="">栏目3</div>
+            <div id="nav-img-3" class="posit nav-img" isfocus alt="">栏目4</div>
+        </div>
+        <div id="recommend-box" class="posit">
+            <div id="recommend" group="{name:'recommend',focus:'recommend._focus',blur:'recommend._blur'}"
+                @up="nav._init" @click="recommend._enter" class="posit" style="display: block;">
+                <div isfocus="" tags="0" id="recommend-div-0" class="posit recommend-img-big"><img
+                        src="https://up.enterdesk.com/edpic_360_360/b9/5c/11/b95c1100bcd75d03bc5967e51c10b9fa.jpg">
+                    <div class="user-bottom-small-text">测试名称测试名称测试名称</div>
+                </div>
+                <div isfocus="" tags="1" id="recommend-div-1" class="posit recommend-img-big"><img
+                        src="https://up.enterdesk.com/edpic_360_360/e0/0a/51/e00a5132b8d4f75a54b8bcf49bc040ed.jpg">
+                    <div class="user-bottom-small-text">测试名称测试名称测试名称测试名称</div>
+                </div>
+                <div id="small-box" class="posit small-box" style="width: 1050px;">
+                    <div isfocus="" id="2" class="float recommend-img-small"><img
+                            src="https://up.enterdesk.com/edpic_360_360/26/d8/10/26d810646de0e806e3783d4cc02b466d.jpg">
+                        <div class="user-bottom-small-text">测试名称</div>
+                    </div>
+                    <div isfocus="" id="3" class="float recommend-img-small"><img
+                            src="https://up.enterdesk.com/edpic_360_360/c8/6e/3f/c86e3f9c39de8610f034350ba613500e.jpg">
+                        <div class="user-bottom-small-text">测试名称</div>
+                    </div>
+                    <div isfocus="" id="4" class="float recommend-img-small"><img
+                            src="https://up.enterdesk.com/edpic_360_360/58/2d/f1/582df1a19ba41a860df98413e8ced917.jpg">
+                        <div class="user-bottom-small-text">测试名称</div>
+                    </div>
+                    <div isfocus="" id="5" class="float recommend-img-small"><img
+                            src="https://up.enterdesk.com/edpic_360_360/ab/98/35/ab9835285398472ff280ea58de328dd5.jpg">
+                        <div class="user-bottom-small-text">测试名称</div>
+                    </div>
+                    <div isfocus="" id="6" class="float recommend-img-small"><img
+                            src="https://up.enterdesk.com/edpic_360_360/32/1b/30/321b30fe64dbc3edce20c7d09ca810e3.jpg">
+                        <div class="user-bottom-small-text">测试名称测试名称1测试名称1</div>
+                    </div>
+                    <div isfocus="" id="4" class="float recommend-img-small"><img
+                            src="https://up.enterdesk.com/edpic_360_360/58/2d/f1/582df1a19ba41a860df98413e8ced917.jpg">
+                        <div class="user-bottom-small-text">测试名称</div>
+                    </div>
+                    <div isfocus="" id="5" class="float recommend-img-small"><img
+                            src="https://up.enterdesk.com/edpic_360_360/ab/98/35/ab9835285398472ff280ea58de328dd5.jpg">
+                        <div class="user-bottom-small-text">测试名称</div>
+                    </div>
+                    <div isfocus="" id="6" class="float recommend-img-small"><img
+                            src="https://up.enterdesk.com/edpic_360_360/32/1b/30/321b30fe64dbc3edce20c7d09ca810e3.jpg">
+                        <div class="user-bottom-small-text">测试名称测试名称1测试名称1</div>
+                    </div>
+                    <div isfocus="" id="4" class="float recommend-img-small"><img
+                            src="https://up.enterdesk.com/edpic_360_360/58/2d/f1/582df1a19ba41a860df98413e8ced917.jpg">
+                        <div class="user-bottom-small-text">测试名称</div>
+                    </div>
+                    <div isfocus="" id="5" class="float recommend-img-small"><img
+                            src="https://up.enterdesk.com/edpic_360_360/ab/98/35/ab9835285398472ff280ea58de328dd5.jpg">
+                        <div class="user-bottom-small-text">测试名称</div>
+                    </div>
+                </div>
+                <div id="down" class="posit" style="width: 1280px;">
+                    <div isfocus="" id="test" tags="2" class="float recommend-img-small"><img
+                            src="https://up.enterdesk.com/edpic_360_360/26/d8/10/26d810646de0e806e3783d4cc02b466d.jpg">
+                        <div class="user-bottom-small-text">测试名称</div>
+                    </div>
+                    <div isfocus="" tags="3" class="float recommend-img-small"><img
+                            src="https://up.enterdesk.com/edpic_360_360/c8/6e/3f/c86e3f9c39de8610f034350ba613500e.jpg">
+                        <div class="user-bottom-small-text">测试名称</div>
+                    </div>
+                    <div isfocus="" tags="4" class="float recommend-img-small"><img
+                            src="https://up.enterdesk.com/edpic_360_360/58/2d/f1/582df1a19ba41a860df98413e8ced917.jpg">
+                        <div class="user-bottom-small-text">测试名称</div>
+                    </div>
+                    <div isfocus="" tags="5" class="float recommend-img-small"><img
+                            src="https://up.enterdesk.com/edpic_360_360/ab/98/35/ab9835285398472ff280ea58de328dd5.jpg">
+                        <div class="user-bottom-small-text">测试名称</div>
+                    </div>
+                    <div isfocus="" tags="6" class="float recommend-img-small"><img
+                            src="https://up.enterdesk.com/edpic_360_360/32/1b/30/321b30fe64dbc3edce20c7d09ca810e3.jpg">
+                        <div class="user-bottom-small-text">测试名称测试名称1测试名称1</div>
+                    </div>
+                    <div isfocus="" tags="4" class="float recommend-img-small"><img
+                            src="https://up.enterdesk.com/edpic_360_360/58/2d/f1/582df1a19ba41a860df98413e8ced917.jpg">
+                        <div class="user-bottom-small-text">测试名称</div>
+                    </div>
+                    <div isfocus="" tags="5" id="test1" class="float recommend-img-small"><img
+                            src="https://up.enterdesk.com/edpic_360_360/ab/98/35/ab9835285398472ff280ea58de328dd5.jpg">
+                        <div class="user-bottom-small-text">测试名称</div>
+                    </div>
+                    <div isfocus="" tags="6" class="float recommend-img-small"><img
+                            src="https://up.enterdesk.com/edpic_360_360/32/1b/30/321b30fe64dbc3edce20c7d09ca810e3.jpg">
+                        <div class="user-bottom-small-text">测试名称测试名称1测试名称1</div>
+                    </div>
+                    <div isfocus="" tags="4" class="float recommend-img-small"><img
+                            src="https://up.enterdesk.com/edpic_360_360/58/2d/f1/582df1a19ba41a860df98413e8ced917.jpg">
+                        <div class="user-bottom-small-text">测试名称</div>
+                    </div>
+                    <div isfocus="" tags="5" class="float recommend-img-small"><img
+                            src="https://up.enterdesk.com/edpic_360_360/ab/98/35/ab9835285398472ff280ea58de328dd5.jpg">
+                        <div class="user-bottom-small-text">测试名称</div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+</body>
+<script src="/js/iptv.js"></script>
+
+<script>
+    var iptv = null; //全局聚焦实列
+    //导航栏
+    var nav = {
+        _data: ["user", "recommend", "classify",
+            "ranking",
+        ],
+        _navIndex: 1,
+        _init: function () {
+            iptv.onFocus(iptv.findFocusEle(nav._navIndex, iptv._groupList.nav.foucsList, "focusIndex"));
+        },
+        /**
+         *  导航栏 聚焦
+         */
+        _focus: function (eleObj) {
+            var imgSrc = eleObj.ele.src.replace("_b", "_f");
+            imgSrc = imgSrc.replace("_t", "_f");
+            eleObj.ele.src = imgSrc;
+            // iptv._enter();
+        },
+        /**
+         *  导航栏 失焦
+         */
+        _blur: function (eleObj) {
+            var imgSrc = eleObj.ele.src;
+            if (eleObj.focusIndex == this._navIndex) {
+                imgSrc = imgSrc.replace("_f", "_t");
+            } else {
+                imgSrc = eleObj.ele.src.replace("_f", "_b");
+            }
+            eleObj.ele.src = imgSrc;
+        },
+        //导航栏切换
+        _enter: _debounce(function (eleObj) {
+            console.log(eleObj, 'enter');
+        }, 350)
+    }
+
+    //推荐模块
+    var recommend = {
+        //推荐栏目聚焦
+        _focus: function (obj) {
+            if (obj.ele.id.indexOf("recommend") > -1) {
+                iptvFocus.prototype.addClass(obj.ele, "focus_btn");
+            } else {
+                iptvFocus.prototype.addClass(obj.ele, "recommend-m-focus");
+            }
+        },
+        //推荐栏目失焦
+        _blur: function (obj) {
+            if (obj.ele.id.indexOf("recommend") > -1) {
+                iptvFocus.prototype.removeClass(obj.ele, "focus_btn");
+            } else {
+                iptvFocus.prototype.removeClass(obj.ele, "recommend-m-focus");
+            }
+        },
+        _enter: function (obj) {
+            console.log(obj, "焦点记录已保存在cookie中");
+        },
+    };
+    window.onload = function () {
+        iptv = new iptvFocus({
+            _group: "nav",
+            focusClassScale: 1.2,
+            visualMargin: 50,
+            // initNoFocus: true,
+            // hasLayer: true,
+        });
+        //移动到可视区域内
+        iptv.moveScroll("right", iptv._nowEle);
+        iptv.moveScroll("left", iptv._nowEle);
+    }
+
+    function BackParent() {
+        console.log("返回");
+
+    }
+
+    function onNavFocus() {
+        console.log(arguments, "---onNavFocus");
+    }
+    window.onunload = function () {
+        //离开页面时 自动记录焦点
+        //iptv.saveFocusIndex();
+        iptv.cookie("home-nav", nav._navIndex.toString());
+    };
+</script>
+
+
+</html>

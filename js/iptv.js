@@ -1,8 +1,9 @@
-/*! epg-focus v2.3.5 | (c) epg focus system | by ywwxly https://gitee.com/ywwxly/epg-focus /license */
-window.runTime = null;
+/*! epg-focus v2.3.6 | (c) epg focus system | by ywwxly https://gitee.com/ywwxly/epg-focus /license */
+// window.runTime = null;
 /**
  * iptv聚焦构造函数
  *   isfocus="" 聚焦的class 默认聚焦元素: default-focus 优先级 isfocus>group>全局className;
+ * @constructor
  * @param {Object} options 
  * {
  * _group,默认聚焦组 string  group="{name:'',focus:''}"; 组的名称 组 内的聚焦函数或className
@@ -10,7 +11,7 @@ window.runTime = null;
  * }
  * 
  */
-window.iptvFocus = function (options) {
+function iptvFocus(options) {
     options = options || {};
     this.viewEle = options.viewEle || this.viewEle; //可视移动元素
     this._group = options._group || this._group; //默认聚焦组
@@ -38,14 +39,14 @@ window.iptvFocus = function (options) {
 };
 
 iptvFocus.prototype = {
-    version: "^2.3.5", //版本号
+    version: "^2.3.6", //版本号
     keyEvent: true, //响应按键开关 默认true打开
     focusClassScale: 1.1, //聚焦class scale放大比例
     visualMargin: 30, //可视边距大小  px
     isMoveScroll: true, //超出屏幕是否自动移动
     viewEle: document.getElementById("view") || document.body, //可视移动元素
     _nowEle: null, //当前聚焦元素
-    _group: "column", //默认聚焦group
+    _group: "no", //默认聚焦group
     _hasLayer: false, //是否有弹窗
     _groupList: null, //聚焦组集合
     _foucsList: null, //可聚焦元素集合
@@ -89,7 +90,7 @@ iptvFocus.prototype = {
                     this.defaultFocus = obj;
                 }
                 //获取绑定的虚拟事件
-                this.getEventAttribute(item, obj, ["blur", "left", "right", "up", "down", "click", "back"]);
+                this.getEventAttribute(item, obj, ["blur", "left", "right", "up", "down", "click", "back", "onFocus"]);
                 focusEle.push(obj);
                 groupFocusIndex++;
             }
@@ -123,7 +124,7 @@ iptvFocus.prototype = {
                     this.defaultFocus = null;
                 }
                 //获取绑定的虚拟事件
-                this.getEventAttribute(item, obj, ["left", "right", "up", "down", "click", "back"]);
+                this.getEventAttribute(item, obj, ["left", "right", "up", "down", "click", "back", "onFocus"]);
                 focusEle[AttributeName] = obj;
             }
             // }
@@ -150,11 +151,10 @@ iptvFocus.prototype = {
      */
     getEventAttribute: function (Obj, setObj, Attributes) {
         if (typeof Attributes == "string") { //如果是字符串
-            if (Obj.nodeType == 1 && Obj.hasAttribute("@" + Attributes)) {
+            if (Obj.hasAttribute("@" + Attributes)) {
                 var eventString = Obj.getAttribute("@" + Attributes);
                 if (eventString) {
                     var eventJavaScript = this.stringToJavascript(eventString);
-                    // console.log(eventJavaScript, "-------eventJavaScript");
                     if (typeof eventJavaScript == "function") {
                         setObj[Attributes] = eventJavaScript;
                     } else {
@@ -217,6 +217,7 @@ iptvFocus.prototype = {
      * @param {String/Object } tag 要查找的DOM元素或id，或元素对象的索引值
      * @param {Array} focusList  //在focusList查找
      * @param {String} type  //通过focusIndex查找
+     * @returns {Object}  可聚焦对象
      */
     findFocusEle: function (tag, focusList, type) {
         var toEle = null;
@@ -253,7 +254,10 @@ iptvFocus.prototype = {
         return toEle;
     },
     /**
-     * 
+     * 切换不同组对象聚焦 主要用于弹窗切换
+     * @param {String} group  组名称
+     * @param {Number} focusIndex 聚焦索引值/元素ID
+     * 聚焦对象优先级：聚焦对象id/索引指定>default-focus默认>聚焦对象第一个
      */
     focusGroup: function (group, focusIndex) {
         // console.log(this._groupList);
@@ -265,14 +269,18 @@ iptvFocus.prototype = {
                 this.onFocus(this._groupList[group].defaultFocus || this._groupList[group].foucsList[0]);
             }
     },
+    //重新获取当前可聚焦元素
+    resetFocus() {
+        this._groupList = this.getAttributeObj("group");
+        this._foucsList = this.getAllFocusList();
+    },
     /**
      * 初始化
      * 获取各group聚焦元素，聚焦方法或className，各事件
      */
     init: function () {
         this.initFn();
-        this._groupList = this.getAttributeObj("group");
-        this._foucsList = this.getAllFocusList();
+        this.resetFocus();
         var focusIndex = this.cookie(this.pathname);
         if (focusIndex) { //优先焦点记录
             focusIndex = focusIndex.split("-");
@@ -295,7 +303,6 @@ iptvFocus.prototype = {
         this._nowEle = newEleObj;
         var eleFocus = newEleObj.focus;
         this._group = newEleObj.groupName;
-        //console.log(this._group, newEleObj, "---------------this._group");
         if (eleFocus) {
             if (typeof eleFocus == "function") {
                 //eleFocus(newEleObj);
@@ -315,6 +322,9 @@ iptvFocus.prototype = {
             } else {
                 this.addClass(newEleObj.ele, "focus_btn");
             }
+        }
+        if (typeof this._groupList[this._group].onFocus === "function") {
+            this.callFn(this._groupList[this._group].onFocus, newEleObj, this._group);
         }
         // runTime = new Date().getTime() - runTime;
         // console.log(runTime, "----------moveE");
@@ -384,7 +394,7 @@ iptvFocus.prototype = {
     },
     /**
      * 优先获取元素私有方法或私有聚焦对象
-     * @param {String} dos 返回或确定
+     * @param {String} dos 返回或确定 back click
      */
     _doKey: function (dos) {
         if (this._nowEle[dos]) { //元素点击事件
@@ -447,7 +457,7 @@ iptvFocus.prototype = {
      * 遍历目标方向的最近元素
      * @param {String} keyDir move 方向
      * @param {Array} foucsList  聚焦数组
-     * @param {String}} type 是否为未找到
+     * @param {String} type 是否为未找到
      */
     move: function (keyDir, foucsList, type) {
         var hasMinObj = this.findMin(keyDir, foucsList);
@@ -456,7 +466,7 @@ iptvFocus.prototype = {
             if (keyDir === "left" || keyDir === "right") {
                 this._nowEle = hasMinObj.min; //优先显示上下离地近的
             } else if (keyDir === "up" || keyDir === "down") {
-                this._nowEle = hasMinObj.pref || hasMinObj.min;
+                this._nowEle = hasMinObj.min || hasMinObj.pref;
             }
             if (this.isMoveScroll) {
                 this.moveScroll(keyDir, oldEle);
@@ -480,7 +490,12 @@ iptvFocus.prototype = {
             return;
         }
     },
-    //检索元素
+    /**
+     * 检索元素
+     * @param {string} keyDir 移动方向 up down left right
+     * @param {Array} foucsList 可聚焦元素集合
+     * @returns {object} 
+     */
     findMin: function (keyDir, foucsList) {
         var pDvalue, mDvalue, pref, min;
         foucsList = (foucsList || this._groupList[this._group].foucsList);
@@ -498,14 +513,21 @@ iptvFocus.prototype = {
             min: min
         };
     },
-    //合并两组后自动聚焦
+    /**
+     * 合并两组后自动聚焦
+     * @param {string} groupName 聚焦组名称 
+     * @param {string} keyDir 移动方向 up down left right
+     */
     concatGroupFocus: function (groupName, keyDir) {
-        console.log(groupName, keyDir, "concatGroupFocus");
-        console.log(this._groupList[groupName].foucsList);
         if (this._groupList[groupName] && this._groupList[groupName].foucsList.length > 0)
             this.move(keyDir, this._groupList[this._group].foucsList.concat(this._groupList[groupName].foucsList));
     },
-    //可视区域自适应
+
+    /**
+     * //可视区域自适应
+     * @param {*} keyDir 不同方向可视区域检测 up down left right
+     * @param {*} oldEle 父级移动距离参照
+     */
     moveScroll: function (keyDir, oldEle) {
         var that = this;
         var moveEle = this._groupList[this._nowEle.groupName].groupEle;
@@ -517,34 +539,32 @@ iptvFocus.prototype = {
         }
         var moveRect = this.getBoundingClientRect(moveEle);
         var focusEleRect = this.getBoundingClientRect(this._nowEle.ele);
-        var oldEleRect = oldEle ? this.getBoundingClientRect(oldEle.ele) : {
-            x: focusEleRect.width - this.visualMargin,
-            y: focusEleRect.height - this.visualMargin
-        };
+        // var oldEleRect = oldEle ? this.getBoundingClientRect(oldEle.ele) : {
+        //     x: focusEleRect.width,
+        //     y: focusEleRect.height
+        // };
         var X, Y;
         var viewEleRect = this.getBoundingClientRect(moveEle.parentElement || this.viewEle);
-        var focusY = keyDir === "up" ? focusEleRect.y - viewEleRect.y : focusEleRect.y - viewEleRect.y + focusEleRect.height;
+        var focusY = keyDir === "down" ? focusEleRect.y - viewEleRect.y + focusEleRect.height : focusEleRect.y - viewEleRect.y;
         var focusX = keyDir === "left" ? focusEleRect.x - viewEleRect.x : focusEleRect.x - viewEleRect.x + focusEleRect.width;
-        var MaxTop = viewEleRect.height || 720;
-        var MaxLeft = viewEleRect.width || 1280;
-        //console.log(focusX, MaxLeft);
-        // console.log(moveEle, focusEleRect, viewEleRect, this.getBoundingClientRect(moveEle), "--------");
-        if (focusY >= MaxTop) { //Y轴超出可视大小
-            if (keyDir === "left" || keyDir === "right") { //左右方向移动 屏蔽Y轴方向逻辑的
-                if (oldEle)
-                    this._nowEle = oldEle;
+        var MaxTop = (viewEleRect.height || 720);
+        var MaxLeft = (viewEleRect.width || 1280);
+        var hasMinObj = this.findMin(keyDir, this._groupList[this._nowEle.groupName].focusList);
+        var nextObj = focusEleRect;
+        if (keyDir === "left" || keyDir === "right") {
+            nextObj = hasMinObj.min && this.getBoundingClientRect(hasMinObj.min.ele); //优先显示上下离地近的
+        } else if (keyDir === "up" || keyDir === "down") {
+            nextObj = (hasMinObj.min || hasMinObj.pref) && this.getBoundingClientRect((hasMinObj.min || hasMinObj.pref).ele);
+        }
+        if (focusY + this.visualMargin >= MaxTop) { //Y轴超出可视大小
+            if (!hasMinObj.hasMin) {
+                Y = -(Math.abs(moveRect.styleTop) + (focusEleRect.bottom + this.visualMargin - viewEleRect.bottom));
             } else {
-                var hasMinObj = this.findMin(keyDir, this._groupList[this._nowEle.groupName].focusList);
-                if (!hasMinObj.hasMin) {
-                    Y = moveRect.y - viewEleRect.y + (MaxTop - this.visualMargin) - focusY;
-                } else {
-                    Y = (moveRect.y > this.visualMargin ? moveRect.y : moveRect.y - this.visualMargin) - viewEleRect.y + (MaxTop - this.visualMargin) - focusY;
-                }
-                animate(moveEle, Y, "top");
-                //moveEle.style.top = Y + "px";
+                Y = -(Math.abs(moveRect.styleTop) + (nextObj.bottom + this.visualMargin - viewEleRect.bottom));
             }
-        } else if (focusY < 0) {
-            var topY = moveRect.y - viewEleRect.y + oldEleRect.y - focusEleRect.y;
+            animate(moveEle, Y, "top");
+        } else if (focusY < this.visualMargin) {
+            var topY = moveRect.styleTop + Math.abs(viewEleRect.y - focusEleRect.y);
             if (topY > 0 && topY < focusEleRect.height) {
                 topY = 0;
             }
@@ -557,21 +577,28 @@ iptvFocus.prototype = {
                     topY = 0;
                 }
             }
-            //moveEle.style.top = topY + "px";
+            if (topY != 0 && focusEleRect.y - viewEleRect.y < this.visualMargin) {
+                var nextY = -(Math.abs(moveRect.styleTop) - Math.abs(nextObj.top - this.visualMargin + viewEleRect.top));
+                if (Math.abs(moveRect.styleTop) - Math.abs(nextY) > viewEleRect.bottom - focusEleRect.bottom) {
+                    topY = topY + this.visualMargin;
+                } else {
+                    topY = nextY;
+                }
+            }
             animate(moveEle, topY, "top");
             Y = topY;
         }
-        if (focusX > MaxLeft) { //X轴超出可视大小
+        if (focusX + this.visualMargin >= MaxLeft) { //X轴超出可视大小
             if (keyDir === "left" || keyDir === "right") {
-                X = (moveRect.x > this.visualMargin ? moveRect.x : moveRect.x - this.visualMargin) - viewEleRect.x + (MaxLeft - this.visualMargin) - focusX;
-                // moveEle.style.left = X + "px";
+                if (!hasMinObj.hasMin) {
+                    X = -(Math.abs(moveRect.styleLeft) + (focusEleRect.right + this.visualMargin - MaxLeft));
+                } else {
+                    X = -(Math.abs(moveRect.styleLeft) + (nextObj.right + this.visualMargin - viewEleRect.right));
+                }
                 animate(moveEle, X);
-            } else {
-                if (oldEle)
-                    this._nowEle = oldEle;
             }
-        } else if (focusX < 0) {
-            var topX = moveRect.x - viewEleRect.x + oldEleRect.x - focusEleRect.x;
+        } else if (focusX < this.visualMargin) {
+            var topX = moveRect.styleLeft + Math.abs(viewEleRect.x - focusEleRect.x);
             if (topX > 0 && topX < focusEleRect.width) {
                 topX = 0;
             }
@@ -584,7 +611,14 @@ iptvFocus.prototype = {
                     topX = 0;
                 }
             }
-            //moveEle.style.left = topX + "px";
+            if (topX != 0 && (focusEleRect.x - viewEleRect.x) < this.visualMargin) {
+                var nextX = -(Math.abs(moveRect.styleLeft) - Math.abs(nextObj.left - this.visualMargin + viewEleRect.left));
+                if (Math.abs(moveRect.styleLeft) - Math.abs(nextX) > viewEleRect.right - focusEleRect.right) {
+                    topX = topX + this.visualMargin;
+                } else {
+                    topX = nextX;
+                }
+            }
             animate(moveEle, topX);
             X = topX;
         }
@@ -608,7 +642,7 @@ iptvFocus.prototype = {
                 clearInterval(element.timeId);
                 element.timeId = setInterval(function () {
                     var spendTime = new Date().getTime() - nowDate;
-                    console.log(spendTime);
+                    // console.log(spendTime);
                     if (spendTime >= 500) {
                         clearInterval(element.timeId);
                         moveTypes(target);
@@ -643,7 +677,7 @@ iptvFocus.prototype = {
     },
     /**
      * getBoundingClientRect 获取元素绘图信息
-     * @param {Element} ele 
+     * @param {Element} ele 元素对象
      */
     getBoundingClientRect: function (ele) {
         // if ("getBoundingClientRect" in document.documentElement) {
@@ -662,11 +696,23 @@ iptvFocus.prototype = {
             return null != e.offsetParent && (t += getLeft(e.offsetParent)),
                 t
         }
+
         var x = getLeft(ele),
             y = getTop(ele),
             width = ele.offsetWidth,
             heihgt = ele.offsetHeight;
+        var styleTop = ele.style.top || y; //获取实际css top值
+        var styleLeft = ele.style.left || x; //获取实际css left值
+        if (window.getComputedStyle) {
+            styleTop = parseInt(window.getComputedStyle(ele).top) || 0;
+            styleLeft = parseInt(window.getComputedStyle(ele).left) || 0;
+        } else if (ele.currentStyle) {
+            styleTop = parseInt(ele.currentStyle.top) || 0;
+            styleLeft = parseInt(ele.currentStyle.left) || 0;
+        }
         return {
+            styleTop: styleTop,
+            styleLeft: styleLeft,
             top: y,
             bottom: y + heihgt,
             left: x,
@@ -674,7 +720,8 @@ iptvFocus.prototype = {
             width: ele.offsetWidth,
             height: ele.offsetHeight,
             x: x,
-            y: y
+            y: y,
+            ele: ele
         };
         //}
     },
@@ -686,10 +733,11 @@ iptvFocus.prototype = {
             height: info.height,
             left: info.left,
             right: info.left + info.width,
-            up: info.top,
-            down: info.top + info.height,
+            up: info.y,
+            down: info.y + info.height,
             x: info.x,
-            y: info.y
+            y: info.y,
+            target: target
         };
     },
     //距离计算
@@ -707,29 +755,29 @@ iptvFocus.prototype = {
         if (ninfo.width || ninfo.height) { //当元素存在，不为none时
             var tmp, pref, min;
             if (dir === 'up') {
-                var upOffset = pinfo.up + (pinfo.height * (this.focusClassScale - 1)) / 2 + 5;
+                var upOffset = pinfo.up + (pinfo.height * (this.focusClassScale - 1)) / 2;
                 if (upOffset >= ninfo.down) {
                     tmp = this.distance(ninfo.left, ninfo.up, pinfo.left, pinfo.up);
                     (!mDvalue || tmp < mDvalue) && (mDvalue = tmp, min = true);
                     (!pDvalue || this.contains(ninfo.left, ninfo.right, pinfo.left, pinfo.right) && tmp < pDvalue) && (pDvalue = tmp, pref = true);
                 }
             } else if (dir === 'down') {
-                var downOffset = pinfo.down * (2 - this.focusClassScale) - 5;
+                var downOffset = pinfo.down * (2 - this.focusClassScale);
                 if (downOffset <= ninfo.up) {
                     tmp = this.distance(ninfo.left, ninfo.up, pinfo.left, pinfo.up);
                     (!mDvalue || tmp < mDvalue) && (mDvalue = tmp, min = true);
                     (!pDvalue || this.contains(ninfo.left, ninfo.right, pinfo.left, pinfo.right) && tmp < pDvalue) && (pDvalue = tmp, pref = true);
                 }
             } else if (dir === 'left') {
-                var leftOffset = pinfo.left + (pinfo.width * (this.focusClassScale - 1)) / 2 + 5;
+                var leftOffset = pinfo.left + (pinfo.width * (this.focusClassScale - 1)) / 2;
                 if (leftOffset >= ninfo.right) {
                     tmp = this.distance(ninfo.right, ninfo.up, pinfo.left, pinfo.up);
                     (!mDvalue || tmp < mDvalue) && (mDvalue = tmp, min = true);
                     (!pDvalue || this.contains(ninfo.up, ninfo.down, pinfo.up, pinfo.down) && tmp < pDvalue) && (pDvalue = tmp, pref = true);
                 }
             } else if (dir === 'right') {
-                var rightOffset = (pinfo.right * (2 - this.focusClassScale)) - 5;
-                if (rightOffset <= ninfo.left) {
+                var rightOffset = (pinfo.right * (2 - this.focusClassScale));
+                if (rightOffset <= ninfo.left && pinfo.right != ninfo.right && pinfo.right < ninfo.right) {
                     tmp = this.distance(ninfo.left, ninfo.up, pinfo.left, pinfo.up);
                     (!mDvalue || tmp < mDvalue) && (mDvalue = tmp, min = true);
                     (!pDvalue || this.contains(ninfo.up, ninfo.down, pinfo.up, pinfo.down) && tmp < pDvalue) && (pDvalue = tmp, pref = true);
@@ -773,7 +821,6 @@ iptvFocus.prototype = {
             iPanel.focus.borders = '0';
             iPanel.focusWidth = '0';
             iPanel.defaultFocusColor = 'transparent';
-
         }
         //Object.keys()兼容ES3
         if (!Object.keys) {
@@ -875,6 +922,14 @@ iptvFocus.prototype = {
         iptvFocus.prototype.removeClass = _removeClass;
         document.onkeydown = this.STB_Key;
     },
+    /**
+     * 保存/获取本地cookie
+     * @param {*} c_name cookie key/name
+     * @param {*} value  
+     * @param {*} expiredays 保存时间 默认1天
+     * @param {*} paths 保存路径 默认/
+     * @returns {string}
+     */
     cookie: function (c_name, value, expiredays, paths) {
         if (value) {
             var exdate = new Date();
@@ -887,7 +942,11 @@ iptvFocus.prototype = {
             return this.getCookie(c_name.toString());
         }
     },
-    //获取cookie的方法
+    /**
+     *  //获取cookie的方法
+     * @param {*} c_name cookie key/name
+     * @returns {string}
+     */
     getCookie: function (c_name) {
         if (document.cookie.length > 0) {
             c_start = document.cookie.indexOf(c_name + "=");
@@ -903,13 +962,17 @@ iptvFocus.prototype = {
             }
         }
     },
-    // 删除 Cookie的方法
+    /**
+     * 删除指定 Cookie的方法
+     * @param {*} name cookie key/name
+     * @param {*} paths 指定路径下的cookie 默认/
+     */
     cutCookie: function (name, paths) {
         var expdate = new Date();
         expdate.setTime(expdate.getTime() - (86400 * 1000 * 1));
         document.cookie = name + "=" + ";expires=" + expdate.toGMTString() + ";path=" + (paths ? paths : ("/")) + ";";
     },
-    STB_Key: function (keyEvent, that) {
+    STB_Key: function (keyEvent) {
         keyEvent = keyEvent ? keyEvent : window.event;
         var _keyName = "";
         var prevent = false;
