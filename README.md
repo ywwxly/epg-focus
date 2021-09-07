@@ -19,6 +19,7 @@ iptv上各种逻辑基本可以实现 可制作单页面应用
 ![image text](https://ywwxly.gitee.io/home/video/epg-focus.gif)  
 
 ## 使用方法
+### 简要
 
 1. HTML要聚焦的元素父级元素中添加```group```属性,```group```属性值为JSON对象形式
 
@@ -46,6 +47,8 @@ iptv上各种逻辑基本可以实现 可制作单页面应用
     ```
     var iptv = new iptvFocus({ focusClassScale: 1.1, //聚焦class scale放大比例 其中聚焦class 有scale放大visualMargin: 30, //可视边距大小  px viewEle: evm.$("viwe"), //可视移动元素 });
     ```
+### 示例
+
     script引入：
 `<script src="/js/iptv.js"></script>`
 
@@ -54,7 +57,7 @@ iptv上各种逻辑基本可以实现 可制作单页面应用
 详细见API及demo演示
 原则上超出屏幕元素只在单一方向（纵向/横向），demo演示为了方便，同时展示了两种方向。
 
-##### 1. 不指定聚焦组 默认聚焦组名称为`no`
+#### 1. 不指定聚焦组 默认聚焦组名称为`no`
 - html
 ```
   <div class="nav">
@@ -76,7 +79,7 @@ iptv上各种逻辑基本可以实现 可制作单页面应用
 ```
  var iptv = new iptvFocus();
 ```
-##### 2. 指定聚焦组 指定聚焦css类
+#### 2. 指定聚焦组 指定聚焦css类
 - html
 ```
  <div id="nav" group="{name:'nav',focus:'nav-focus'}" @down="recommend" @click="nav._enter" class="posit"
@@ -118,7 +121,7 @@ var iptv = new iptvFocus({
 
 ### `iptvFocus(options)` 构造函数
 
-options
+- options
 构造参数
 
 |  key | 描述  |  默认值 |
@@ -140,7 +143,7 @@ options
 ### `findFocusEle(tag, focusList, type)` 查找并返回目标对象
 
 
-Parameters:
+- Parameters:
 
 |  Name | 描述  |  类型 | 必填| 可选值 |
 | :------------ | :------------ | :------------ | :---| :---- |
@@ -152,12 +155,13 @@ return:
 可聚焦对象
 
 ### `focusGroup(group, focusIndex)` 切换不同组对象聚焦 主要用于弹窗切换
-Parameters:
+- Parameters:
 
 |  Name | 描述  |  类型 | 必填| 可选值 |
 | :------------ | :------------ | :------------ | :---| :---- |
 |group	| 聚焦元素分组名称 |String |true | 组名称|
 | focusIndex |	聚焦索引值/元素ID 聚焦对象优先级：聚焦对象id/索引指定>default-focus默认>聚焦对象第一个|Number|false|聚焦对象id/索引指定|
+
 iptv聚焦构造函数 isfocus="" 聚焦的class 默认聚焦元素: default-focus 优先级 isfocus>group>全局className;
 
 ### `resetFocus` 重新获取当前可聚焦元素
@@ -192,7 +196,7 @@ iptv聚焦构造函数 isfocus="" 聚焦的class 默认聚焦元素: default-foc
 
 - 执行方法优先级 聚焦元素的定义的方法>聚焦组的定义的方法
 
-### `_back` 触发确定/OK键
+### `_back` 触发回格/返回键
 
 - 执行方法优先级 聚焦元素的定义的方法>聚焦组的定义的方法>全局`BackParent`方法
 
