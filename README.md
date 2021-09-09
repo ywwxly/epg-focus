@@ -19,9 +19,9 @@
 
     ``` html
     <!-- 高清 -->
-    <meta name="page-view-size" content="1280*720">
+    <meta name="page-view-size" content="1280*720" />
     <!-- 标清 -->
-    <meta name="page-view-size" content="640*530">
+    <meta name="page-view-size" content="640*530" />
     ```
 
     - 通过`<object> <param>`标签配合启动java游戏
