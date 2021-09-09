@@ -1,8 +1,8 @@
-/*! epg-focus v2.3.6 | (c) epg focus system | by ywwxly https://gitee.com/ywwxly/epg-focus /license */
+/*! epg-focus v2.3.7 | (c) epg focus system | by ywwxly https://gitee.com/ywwxly/epg-focus /license */
 // window.runTime = null;
 /**
  * iptv聚焦构造函数
- *   isfocus="" 聚焦的class 默认聚焦元素: default-focus 优先级 isfocus>group>全局className;
+ * isfocus 聚焦的class 默认聚焦元素: default-focus 优先级: isfocus>group>全局className;
  * @constructor
  * @param {Object} options 
  * {
@@ -39,7 +39,7 @@ function iptvFocus(options) {
 };
 
 iptvFocus.prototype = {
-    version: "^2.3.6", //版本号
+    version: "^2.3.7", //版本号
     keyEvent: true, //响应按键开关 默认true打开
     focusClassScale: 1.1, //聚焦class scale放大比例
     visualMargin: 30, //可视边距大小  px
@@ -538,6 +538,11 @@ iptvFocus.prototype = {
             moveEle = this.viewEle;
         }
         var moveRect = this.getBoundingClientRect(moveEle);
+        var DIR = ["top", "down"].indexOf(keyDir) > -1 ? "Y" : "X";
+        if (!this._groupList[this._nowEle.groupName].hasOwnProperty(DIR + "_default")) { //判断是否保存移动方向初始位置
+            this._groupList[this._nowEle.groupName][DIR + "_default"] = moveRect[["top", "down"].indexOf(DIR) > -1 ? 'styleTop' : 'styleLeft'];
+        }
+        var dirDefault = this._groupList[this._nowEle.groupName][DIR + "_default"] || 0; //移动方向初始位置
         var focusEleRect = this.getBoundingClientRect(this._nowEle.ele);
         // var oldEleRect = oldEle ? this.getBoundingClientRect(oldEle.ele) : {
         //     x: focusEleRect.width,
@@ -563,7 +568,7 @@ iptvFocus.prototype = {
                 Y = -(Math.abs(moveRect.styleTop) + (nextObj.bottom + this.visualMargin - viewEleRect.bottom));
             }
             animate(moveEle, Y, "top");
-        } else if (focusY < this.visualMargin) {
+        } else if (focusY <= this.visualMargin) {
             var topY = moveRect.styleTop + Math.abs(viewEleRect.y - focusEleRect.y);
             if (topY > 0 && topY < focusEleRect.height) {
                 topY = 0;
@@ -571,18 +576,19 @@ iptvFocus.prototype = {
             if (Math.abs(topY) < this.visualMargin) {
                 topY = 0;
             }
-            if (topY) {
-                var hasMinObj = this.findMin(keyDir, this._groupList[this._nowEle.groupName].focusList);
-                if (!hasMinObj.hasMin) {
-                    topY = 0;
-                }
-            }
+
             if (topY != 0 && focusEleRect.y - viewEleRect.y < this.visualMargin) {
                 var nextY = -(Math.abs(moveRect.styleTop) - Math.abs(nextObj.top - this.visualMargin + viewEleRect.top));
                 if (Math.abs(moveRect.styleTop) - Math.abs(nextY) > viewEleRect.bottom - focusEleRect.bottom) {
                     topY = topY + this.visualMargin;
                 } else {
                     topY = nextY;
+                }
+            }
+            if (topY != dirDefault && (keyDir === "up" || keyDir === "down")) {
+                var hasMinObj = this.findMin(keyDir, this._groupList[this._nowEle.groupName].focusList);
+                if (!hasMinObj.hasMin) { //当前组上下边界
+                    topY = dirDefault;
                 }
             }
             animate(moveEle, topY, "top");
@@ -597,7 +603,7 @@ iptvFocus.prototype = {
                 }
                 animate(moveEle, X);
             }
-        } else if (focusX < this.visualMargin) {
+        } else if (focusX <= this.visualMargin) {
             var topX = moveRect.styleLeft + Math.abs(viewEleRect.x - focusEleRect.x);
             if (topX > 0 && topX < focusEleRect.width) {
                 topX = 0;
@@ -605,18 +611,18 @@ iptvFocus.prototype = {
             if (Math.abs(topX) < this.visualMargin) {
                 topX = 0;
             }
-            if (topX) {
-                var hasMinObj = this.findMin(keyDir, this._groupList[this._nowEle.groupName].focusList);
-                if (!hasMinObj.hasMin) {
-                    topX = 0;
-                }
-            }
             if (topX != 0 && (focusEleRect.x - viewEleRect.x) < this.visualMargin) {
                 var nextX = -(Math.abs(moveRect.styleLeft) - Math.abs(nextObj.left - this.visualMargin + viewEleRect.left));
                 if (Math.abs(moveRect.styleLeft) - Math.abs(nextX) > viewEleRect.right - focusEleRect.right) {
                     topX = topX + this.visualMargin;
                 } else {
                     topX = nextX;
+                }
+            }
+            if (topX != dirDefault && (keyDir === "left" || keyDir === "right")) {
+                var hasMinObj = this.findMin(keyDir, this._groupList[this._nowEle.groupName].focusList);
+                if (!hasMinObj.hasMin) { //当前组左右边界
+                    topX = dirDefault;
                 }
             }
             animate(moveEle, topX);

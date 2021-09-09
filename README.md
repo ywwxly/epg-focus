@@ -4,6 +4,31 @@
  EPG聚焦逻辑，采用类Vue模板语法,通过计算聚焦元素距离，判断距离最小值的元素，达到自动聚焦效果.
 
  由于IPTV机顶盒浏览器内核版本较低且各种魔改内核，js版本尽量采用ECMAScript 3，该项目为的实测兼容的写法,未使用任何打包工具。但并不排除某些低版本魔改内核的不兼容。
+ ### EPG环境WEB开发注意
+
+ 1. CSS相关
+    - 只有部分机顶盒支持少量CSS3特性
+    - 字体大小（px） 部分盒子字体大小 实际显示顺序不正常： `16px<22px<18px<24px<20px<26px`
+    - CSS颜色值:部分盒子不支持透明值， 盒子间支持情况不一样，rgba颜色、rgb颜色 、16进制颜色,根据实际情况调整，推荐使用16进制颜色
+
+ 2. HTML相关 避免使用H5新特性
+    - 本地数据保存请使用cookie,但数量不宜过多， 不支持localStorage, sessionStorage
+    - Linux盒子大都不支持H5中的`<canvas>`标签
+    - 媒体播放使用EPG环境的`MediaPlayer`对象封装（MediaPlayer对象的坑不在此详细陈列）
+    - EPG环境通过 下面meta标签的content值区分高清、标清进行全屏展示
+
+    ``` html
+    <!-- 高清 -->
+    <meta name="page-view-size" content="1280*720">
+    <!-- 标清 -->
+    <meta name="page-view-size" content="640*530">
+    ```
+
+    - 通过`<object> <param>`标签配合启动java游戏
+
+ 3. JavaScript相关
+    - js版本尽量采用ECMAScript 3 （例如常用的，ES5新增的`Object.keys`， `Array.prototype.map`， `JSON`等大都盒子不支持，可通过Polyfill解决）
+    - 页面跳转请使用绝对路径（少数盒子不支持相对路径）
 
 ## 功能介绍
 
@@ -143,7 +168,7 @@ var iptv = new iptvFocus({
 |  visualMargin |  可视边距大小  px | 30  |
 |  isMoveScroll |  超出屏幕是否自动移动 | true  |
 |  viewEle |  可视移动元素的根元素 |  document.body  |
-|  _group |  聚焦group名称 | column  |
+|  _group |  聚焦group名称 | no  |
 |  _hasLayer |  标识是否有弹窗 有弹窗则聚焦元素必须分组| false  |
 |  animateHas |  是否开启js实现变速移动动画 | false  |
 |  initNoFocus |  初始化时不自动聚焦 | false  |
@@ -416,3 +441,7 @@ iptv聚焦构造函数 isfocus="" 聚焦的class 默认聚焦元素: default-foc
 3. 完善注释，增加demo展示
 
 4. 增加接口文档，丰富使用说明
+
+### 2021.09.07 ^2.3.7
+
+1. 超出指定可视区域自动移动时，保存移动元素初始位置，便于复原
