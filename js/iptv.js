@@ -270,7 +270,7 @@ iptvFocus.prototype = {
             }
     },
     //重新获取当前可聚焦元素
-    resetFocus() {
+    resetFocus: function () {
         this._groupList = this.getAttributeObj("group");
         this._foucsList = this.getAllFocusList();
     },
