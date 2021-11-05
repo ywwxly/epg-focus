@@ -48,6 +48,10 @@
             position: absolute;
         }
 
+        .hidden {
+            visibility: hidden;
+        }
+
         .float {
             float: left;
         }
@@ -94,7 +98,7 @@
             margin-left: 15px;
         }
 
-        #recommend-box {
+        .recommend-box {
             top: 110px;
             left: 0px;
             overflow: hidden;
@@ -206,117 +210,109 @@
             <div id="nav-img-2" class="posit nav-img" isfocus alt="">栏目3</div>
             <div id="nav-img-3" class="posit nav-img" isfocus alt="">栏目4</div>
         </div>
-        <div id="recommend-box" class="posit">
+        <div id="recommend-box" class="recommend-box posit">
             <div id="recommend" group="{name:'recommend',focus:'recommend._focus',blur:'recommend._blur'}"
                 @up="nav._init" @click="recommend._enter" class="posit" style="display: block;">
-                <div isfocus="" tags="0" id="recommend-div-0" class="posit recommend-img-big"><img
+                <div isfocus="" id="recommend-div-0" class="posit recommend-img-big"><img
                         src="https://up.enterdesk.com/edpic_360_360/b9/5c/11/b95c1100bcd75d03bc5967e51c10b9fa.jpg">
                     <div class="user-bottom-small-text">测试名称测试名称测试名称</div>
                 </div>
-                <div isfocus="" tags="1" id="recommend-div-1" class="posit recommend-img-big"><img
+                <div isfocus="" id="recommend-div-1" class="posit recommend-img-big"><img
                         src="https://up.enterdesk.com/edpic_360_360/e0/0a/51/e00a5132b8d4f75a54b8bcf49bc040ed.jpg">
                     <div class="user-bottom-small-text">测试名称测试名称测试名称测试名称</div>
                 </div>
                 <div id="small-box" class="posit small-box" style="width: 1650px;">
-                    <div isfocus="" id="2" class="float recommend-img-small"><img
+                    <div isfocus="" class="float recommend-img-small"><img
                             src="https://up.enterdesk.com/edpic_360_360/26/d8/10/26d810646de0e806e3783d4cc02b466d.jpg">
                         <div class="user-bottom-small-text">测试名称</div>
                     </div>
-                    <div isfocus="" id="3" class="float recommend-img-small"><img
+                    <div isfocus="" class="float recommend-img-small"><img
                             src="https://up.enterdesk.com/edpic_360_360/c8/6e/3f/c86e3f9c39de8610f034350ba613500e.jpg">
                         <div class="user-bottom-small-text">测试名称</div>
                     </div>
-                    <div isfocus="" id="4" class="float recommend-img-small"><img
+                    <div isfocus="" class="float recommend-img-small"><img
                             src="https://up.enterdesk.com/edpic_360_360/58/2d/f1/582df1a19ba41a860df98413e8ced917.jpg">
                         <div class="user-bottom-small-text">测试名称</div>
                     </div>
-                    <div isfocus="" id="5" class="float recommend-img-small"><img
+                    <div isfocus="" class="float recommend-img-small"><img
                             src="https://up.enterdesk.com/edpic_360_360/ab/98/35/ab9835285398472ff280ea58de328dd5.jpg">
                         <div class="user-bottom-small-text">测试名称</div>
                     </div>
-                    <div isfocus="" id="6" class="float recommend-img-small"><img
+                    <div isfocus="" class="float recommend-img-small"><img
                             src="https://up.enterdesk.com/edpic_360_360/32/1b/30/321b30fe64dbc3edce20c7d09ca810e3.jpg">
                         <div class="user-bottom-small-text">测试名称测试名称1测试名称1</div>
                     </div>
-                    <div isfocus="" id="4" class="float recommend-img-small"><img
+                    <div isfocus="" class="float recommend-img-small"><img
                             src="https://up.enterdesk.com/edpic_360_360/58/2d/f1/582df1a19ba41a860df98413e8ced917.jpg">
                         <div class="user-bottom-small-text">测试名称</div>
                     </div>
-                    <div isfocus="" id="5" class="float recommend-img-small"><img
+                    <div isfocus="" class="float recommend-img-small"><img
                             src="https://up.enterdesk.com/edpic_360_360/ab/98/35/ab9835285398472ff280ea58de328dd5.jpg">
                         <div class="user-bottom-small-text">测试名称</div>
                     </div>
-                    <div isfocus="" id="6" class="float recommend-img-small"><img
+                    <div isfocus="" class="float recommend-img-small"><img
                             src="https://up.enterdesk.com/edpic_360_360/32/1b/30/321b30fe64dbc3edce20c7d09ca810e3.jpg">
                         <div class="user-bottom-small-text">测试名称测试名称1测试名称1</div>
                     </div>
-                    <div isfocus="" id="4" class="float recommend-img-small"><img
+                    <div isfocus="" class="float recommend-img-small"><img
                             src="https://up.enterdesk.com/edpic_360_360/58/2d/f1/582df1a19ba41a860df98413e8ced917.jpg">
                         <div class="user-bottom-small-text">测试名称</div>
                     </div>
-                    <div isfocus="" id="5" class="float recommend-img-small"><img
+                    <div isfocus="" class="float recommend-img-small"><img
                             src="https://up.enterdesk.com/edpic_360_360/ab/98/35/ab9835285398472ff280ea58de328dd5.jpg">
                         <div class="user-bottom-small-text">测试名称</div>
                     </div>
-                    <div isfocus="" id="4" class="float recommend-img-small"><img
+                    <div isfocus="" class="float recommend-img-small"><img
                             src="https://up.enterdesk.com/edpic_360_360/58/2d/f1/582df1a19ba41a860df98413e8ced917.jpg">
                         <div class="user-bottom-small-text">测试名称</div>
                     </div>
-                    <div isfocus="" id="5" class="float recommend-img-small"><img
+                    <div isfocus="" class="float recommend-img-small"><img
                             src="https://up.enterdesk.com/edpic_360_360/ab/98/35/ab9835285398472ff280ea58de328dd5.jpg">
                         <div class="user-bottom-small-text">测试名称</div>
                     </div>
-                    <div isfocus="" id="6" class="float recommend-img-small"><img
+                    <div isfocus="" class="float recommend-img-small"><img
                             src="https://up.enterdesk.com/edpic_360_360/32/1b/30/321b30fe64dbc3edce20c7d09ca810e3.jpg">
                         <div class="user-bottom-small-text">测试名称测试名称1测试名称1</div>
-                    </div>
-                    <div isfocus="" id="4" class="float recommend-img-small"><img
-                            src="https://up.enterdesk.com/edpic_360_360/58/2d/f1/582df1a19ba41a860df98413e8ced917.jpg">
-                        <div class="user-bottom-small-text">测试名称</div>
-                    </div>
-                    <div isfocus="" id="5" class="float recommend-img-small"><img
-                            src="https://up.enterdesk.com/edpic_360_360/ab/98/35/ab9835285398472ff280ea58de328dd5.jpg">
-                        <div class="user-bottom-small-text">测试名称</div>
                     </div>
                 </div>
                 <div id="down" class="posit" style="width: 1280px;">
-                    <div isfocus="" id="test" tags="2" class="float recommend-img-small"><img
+                    <div isfocus="" id="test" class="float recommend-img-small"><img
                             src="https://up.enterdesk.com/edpic_360_360/26/d8/10/26d810646de0e806e3783d4cc02b466d.jpg">
                         <div class="user-bottom-small-text">测试名称</div>
                     </div>
-                    <div isfocus="" tags="3" class="float recommend-img-small"><img
+                    <div isfocus="" class="float recommend-img-small"><img
                             src="https://up.enterdesk.com/edpic_360_360/c8/6e/3f/c86e3f9c39de8610f034350ba613500e.jpg">
                         <div class="user-bottom-small-text">测试名称</div>
                     </div>
-                    <div isfocus="" tags="4" class="float recommend-img-small"><img
+                    <div isfocus="" class="float recommend-img-small"><img
                             src="https://up.enterdesk.com/edpic_360_360/58/2d/f1/582df1a19ba41a860df98413e8ced917.jpg">
                         <div class="user-bottom-small-text">测试名称</div>
                     </div>
-                    <div isfocus="" tags="5" class="float recommend-img-small"><img
+                    <div isfocus="" class="float recommend-img-small"><img
                             src="https://up.enterdesk.com/edpic_360_360/ab/98/35/ab9835285398472ff280ea58de328dd5.jpg">
                         <div class="user-bottom-small-text">测试名称</div>
                     </div>
-                    <div isfocus="" tags="6" class="float recommend-img-small"><img
+                    <div isfocus="" class="float recommend-img-small"><img
                             src="https://up.enterdesk.com/edpic_360_360/32/1b/30/321b30fe64dbc3edce20c7d09ca810e3.jpg">
                         <div class="user-bottom-small-text">测试名称测试名称1测试名称1</div>
                     </div>
-                    <div isfocus="" tags="4" class="float recommend-img-small"><img
+                    <div isfocus="" class="float recommend-img-small"><img
                             src="https://up.enterdesk.com/edpic_360_360/58/2d/f1/582df1a19ba41a860df98413e8ced917.jpg">
                         <div class="user-bottom-small-text">测试名称</div>
                     </div>
-                    <div isfocus="" tags="5" id="test1" class="float recommend-img-small"><img
+                    <div isfocus="" id="test1" class="float recommend-img-small"><img
                             src="https://up.enterdesk.com/edpic_360_360/ab/98/35/ab9835285398472ff280ea58de328dd5.jpg">
                         <div class="user-bottom-small-text">测试名称</div>
                     </div>
-                    <div isfocus="" tags="6" class="float recommend-img-small"><img
+                    <div isfocus="" class="float recommend-img-small"><img
                             src="https://up.enterdesk.com/edpic_360_360/32/1b/30/321b30fe64dbc3edce20c7d09ca810e3.jpg">
                         <div class="user-bottom-small-text">测试名称测试名称1测试名称1</div>
                     </div>
-                    <div isfocus="" tags="4" class="float recommend-img-small"><img
+                    <div isfocus="" class="float recommend-img-small"><img
                             src="https://up.enterdesk.com/edpic_360_360/58/2d/f1/582df1a19ba41a860df98413e8ced917.jpg">
                         <div class="user-bottom-small-text">测试名称</div>
                     </div>
-                    <div isfocus="" tags="5" class="float recommend-img-small"><img
+                    <div isfocus="" class="float recommend-img-small"><img
                             src="https://up.enterdesk.com/edpic_360_360/ab/98/35/ab9835285398472ff280ea58de328dd5.jpg">
                         <div class="user-bottom-small-text">测试名称</div>
                     </div>
@@ -324,7 +320,61 @@
             </div>
 
         </div>
-
+        <div id="classify-box" class="recommend-box posit hidden">
+            <div id="recommend" group="{name:'classify',focus:'recommend._focus',blur:'recommend._blur'}"
+                @up="nav._init" @click="recommend._enter" class="posit" style="display: block;">
+                <div isfocus="" id="recommend-div-0" class="posit recommend-img-big"><img
+                        src="https://up.enterdesk.com/edpic_360_360/b9/5c/11/b95c1100bcd75d03bc5967e51c10b9fa.jpg">
+                    <div class="user-bottom-small-text">测试名称测试名称测试名称</div>
+                </div>
+                <div isfocus="" id="recommend-div-1" class="posit recommend-img-big"><img
+                        src="https://up.enterdesk.com/edpic_360_360/e0/0a/51/e00a5132b8d4f75a54b8bcf49bc040ed.jpg">
+                    <div class="user-bottom-small-text">测试名称测试名称测试名称测试名称</div>
+                </div>
+                <div id="down" class="posit" style="width: 1180px;">
+                    <div isfocus="" id="test" class="float recommend-img-small"><img
+                            src="https://up.enterdesk.com/edpic_360_360/26/d8/10/26d810646de0e806e3783d4cc02b466d.jpg">
+                        <div class="user-bottom-small-text">测试名称</div>
+                    </div>
+                    <div isfocus="" class="float recommend-img-small"><img
+                            src="https://up.enterdesk.com/edpic_360_360/c8/6e/3f/c86e3f9c39de8610f034350ba613500e.jpg">
+                        <div class="user-bottom-small-text">测试名称</div>
+                    </div>
+                    <div isfocus="" class="float recommend-img-small"><img
+                            src="https://up.enterdesk.com/edpic_360_360/58/2d/f1/582df1a19ba41a860df98413e8ced917.jpg">
+                        <div class="user-bottom-small-text">测试名称</div>
+                    </div>
+                    <div isfocus="" class="float recommend-img-small"><img
+                            src="https://up.enterdesk.com/edpic_360_360/ab/98/35/ab9835285398472ff280ea58de328dd5.jpg">
+                        <div class="user-bottom-small-text">测试名称</div>
+                    </div>
+                    <div isfocus="" class="float recommend-img-small"><img
+                            src="https://up.enterdesk.com/edpic_360_360/32/1b/30/321b30fe64dbc3edce20c7d09ca810e3.jpg">
+                        <div class="user-bottom-small-text">测试名称测试名称1测试名称1</div>
+                    </div>
+                    <div isfocus="" class="float recommend-img-small"><img
+                            src="https://up.enterdesk.com/edpic_360_360/58/2d/f1/582df1a19ba41a860df98413e8ced917.jpg">
+                        <div class="user-bottom-small-text">测试名称</div>
+                    </div>
+                    <div isfocus="" id="test1" class="float recommend-img-small"><img
+                            src="https://up.enterdesk.com/edpic_360_360/ab/98/35/ab9835285398472ff280ea58de328dd5.jpg">
+                        <div class="user-bottom-small-text">测试名称</div>
+                    </div>
+                    <div isfocus="" class="float recommend-img-small"><img
+                            src="https://up.enterdesk.com/edpic_360_360/32/1b/30/321b30fe64dbc3edce20c7d09ca810e3.jpg">
+                        <div class="user-bottom-small-text">测试名称测试名称1测试名称1</div>
+                    </div>
+                    <div isfocus="" class="float recommend-img-small"><img
+                            src="https://up.enterdesk.com/edpic_360_360/58/2d/f1/582df1a19ba41a860df98413e8ced917.jpg">
+                        <div class="user-bottom-small-text">测试名称</div>
+                    </div>
+                    <div isfocus="" class="float recommend-img-small"><img
+                            src="https://up.enterdesk.com/edpic_360_360/ab/98/35/ab9835285398472ff280ea58de328dd5.jpg">
+                        <div class="user-bottom-small-text">测试名称</div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </body>
 <script src="/js/iptv.js"></script>
@@ -361,10 +411,20 @@
             }
             eleObj.ele.src = imgSrc;
         },
-        //导航栏切换
-        _enter: _debounce(function (eleObj) {
+        //导航栏切换栏目
+        _enter: function (eleObj) {
             console.log(eleObj, 'enter');
-        }, 350)
+            if (!document.getElementById(this._data[eleObj.focusIndex] + "-box")) {
+                console.log('该栏目内容未定义');
+                return;
+            }
+            var groupName = this._data[this._navIndex];
+            iptv.addClass(document.getElementById(groupName + "-box"), "hidden");
+            nav._navIndex = eleObj.focusIndex; //记录导航索引
+            groupName = this._data[this._navIndex];
+            iptv._groupList.nav.down = groupName; //重置导航向下的groupName
+            iptv.removeClass(document.getElementById(groupName + "-box"), "hidden");
+        }
     }
 
     //推荐模块
@@ -395,8 +455,10 @@
             focusClassScale: 1.2,
             visualMargin: 50,
             // initNoFocus: true,
-            // hasLayer: true,
+            hasLayer: true, //禁止自动切换聚焦组
         });
+        //获取并切换至上次浏览的栏目
+        nav._enter(iptv.findFocusEle(iptv.cookie("home-nav") || 1));
         //移动到可视区域内
         iptv.moveScroll("right", iptv._nowEle);
         iptv.moveScroll("left", iptv._nowEle);
@@ -413,6 +475,7 @@
     window.onunload = function () {
         //离开页面时 自动记录焦点
         //iptv.saveFocusIndex();
+        //保存当前浏览的栏目索引
         iptv.cookie("home-nav", nav._navIndex.toString());
     };
 </script>

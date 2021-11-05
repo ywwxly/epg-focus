@@ -168,8 +168,8 @@ var iptv = new iptvFocus({
 |  visualMargin |  可视边距大小  px | 30  |
 |  isMoveScroll |  超出屏幕是否自动移动 | true  |
 |  viewEle |  可视移动元素的根元素 |  document.body  |
-|  _group |  聚焦group名称 | no  |
-|  _hasLayer |  标识是否有弹窗 有弹窗则聚焦元素必须分组| false  |
+|  _group |  聚焦group名称 | no （_hasLayer:true,无默认聚焦组，必须字面量定义分组） |
+|  _hasLayer |  标识是否有重叠聚焦分组 （用于禁止自动切换聚焦分组）| false  |
 |  animateHas |  是否开启js实现变速移动动画 | false  |
 |  initNoFocus |  初始化时不自动聚焦 | false  |
 
