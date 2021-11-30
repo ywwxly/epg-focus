@@ -150,6 +150,7 @@ var iptv = new iptvFocus({
 | index  |  `Number` | 全局可聚焦对象索引  |
 
 3. 根据实际功能需求自行调整,功能演示详情请看demo
+    - **注意:demo中iptv.html仅做PC本地功能演示，home.html可以在机顶盒上测试**
 
 ------------
 ## API
@@ -169,7 +170,7 @@ var iptv = new iptvFocus({
 |  isMoveScroll |  超出屏幕是否自动移动 | true  |
 |  viewEle |  可视移动元素的根元素 |  document.body  |
 |  _group |  聚焦group名称 | no （_hasLayer:true,无默认聚焦组，必须字面量定义分组） |
-|  _hasLayer |  标识是否有重叠聚焦分组 （用于禁止自动切换聚焦分组）| false  |
+|  hasLayer |  标识是否有重叠聚焦分组 （用于禁止自动切换聚焦分组）| false  |
 |  animateHas |  是否开启js实现变速移动动画 | false  |
 |  initNoFocus |  初始化时不自动聚焦 | false  |
 
@@ -201,6 +202,8 @@ iptv聚焦构造函数 isfocus="" 聚焦的class 默认聚焦元素: default-foc
 
 ### `resetFocus` 重新获取当前可聚焦元素
 
+- 实例化之后,有新增的聚焦元素，需要手动调用此函数获取保存到当前实例中
+
 ### `onFocus` 设置目标对象为聚焦状态
 
 - Parameters:
@@ -218,6 +221,10 @@ iptv聚焦构造函数 isfocus="" 聚焦的class 默认聚焦元素: default-foc
 
 
 ### `onBlur` 设置目标对象为失焦状态
+
+|  Name | 描述  |  类型 | 必填| 可选值 |
+| :------------ | :------------ | :------------ | :---| :---- |
+| oldEleObj  |  目标对象 | Object  | false | |
 
 ### `_dirKey` 指定移动方向或方法
 

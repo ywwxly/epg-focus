@@ -65,10 +65,10 @@
         .nav-img {
             width: 150px;
             height: 56px;
-            background-color: #04b97c;
+            background-color: #109c6d;
             border-radius: 10px;
             text-align: center;
-            color: #ffffff;
+            color: #d4dcad;
             font-size: 26px;
             line-height: 56px;
         }
@@ -196,6 +196,10 @@
             transform: scale(1.1, 1.1);
             z-index: 10;
         }
+
+        .nav-select {
+            color: #ffffff;
+        }
     </style>
 </head>
 
@@ -204,16 +208,16 @@
         <div id="nav" group="{name:'nav',focus:'nav-focus'}" @down="recommend" @click="nav._enter" class="posit"
             @onFocus="onNavFocus">
             <div id="nav-img-0" class="posit nav-img" isfocus alt="">栏目1</div>
-            <div id="nav-img-1" default-focus class="posit nav-img" isfocus alt="">
-                推荐
+            <div id="nav-img-1" class="posit nav-img" isfocus alt="">
+                横向
             </div>
-            <div id="nav-img-2" class="posit nav-img" isfocus alt="">栏目3</div>
+            <div id="nav-img-2" class="posit nav-img" isfocus alt="">纵向</div>
             <div id="nav-img-3" class="posit nav-img" isfocus alt="">栏目4</div>
         </div>
         <div id="recommend-box" class="recommend-box posit">
             <div id="recommend" group="{name:'recommend',focus:'recommend._focus',blur:'recommend._blur'}"
                 @up="nav._init" @click="recommend._enter" class="posit" style="display: block;">
-                <div isfocus="" id="recommend-div-0" class="posit recommend-img-big"><img
+                <div isfocus="" default-focus id="recommend-div-0" class="posit recommend-img-big"><img
                         src="https://up.enterdesk.com/edpic_360_360/b9/5c/11/b95c1100bcd75d03bc5967e51c10b9fa.jpg">
                     <div class="user-bottom-small-text">测试名称测试名称测试名称</div>
                 </div>
@@ -273,48 +277,6 @@
                     <div isfocus="" class="float recommend-img-small"><img
                             src="https://up.enterdesk.com/edpic_360_360/32/1b/30/321b30fe64dbc3edce20c7d09ca810e3.jpg">
                         <div class="user-bottom-small-text">测试名称测试名称1测试名称1</div>
-                    </div>
-                </div>
-                <div id="down" class="posit" style="width: 1280px;">
-                    <div isfocus="" id="test" class="float recommend-img-small"><img
-                            src="https://up.enterdesk.com/edpic_360_360/26/d8/10/26d810646de0e806e3783d4cc02b466d.jpg">
-                        <div class="user-bottom-small-text">测试名称</div>
-                    </div>
-                    <div isfocus="" class="float recommend-img-small"><img
-                            src="https://up.enterdesk.com/edpic_360_360/c8/6e/3f/c86e3f9c39de8610f034350ba613500e.jpg">
-                        <div class="user-bottom-small-text">测试名称</div>
-                    </div>
-                    <div isfocus="" class="float recommend-img-small"><img
-                            src="https://up.enterdesk.com/edpic_360_360/58/2d/f1/582df1a19ba41a860df98413e8ced917.jpg">
-                        <div class="user-bottom-small-text">测试名称</div>
-                    </div>
-                    <div isfocus="" class="float recommend-img-small"><img
-                            src="https://up.enterdesk.com/edpic_360_360/ab/98/35/ab9835285398472ff280ea58de328dd5.jpg">
-                        <div class="user-bottom-small-text">测试名称</div>
-                    </div>
-                    <div isfocus="" class="float recommend-img-small"><img
-                            src="https://up.enterdesk.com/edpic_360_360/32/1b/30/321b30fe64dbc3edce20c7d09ca810e3.jpg">
-                        <div class="user-bottom-small-text">测试名称测试名称1测试名称1</div>
-                    </div>
-                    <div isfocus="" class="float recommend-img-small"><img
-                            src="https://up.enterdesk.com/edpic_360_360/58/2d/f1/582df1a19ba41a860df98413e8ced917.jpg">
-                        <div class="user-bottom-small-text">测试名称</div>
-                    </div>
-                    <div isfocus="" id="test1" class="float recommend-img-small"><img
-                            src="https://up.enterdesk.com/edpic_360_360/ab/98/35/ab9835285398472ff280ea58de328dd5.jpg">
-                        <div class="user-bottom-small-text">测试名称</div>
-                    </div>
-                    <div isfocus="" class="float recommend-img-small"><img
-                            src="https://up.enterdesk.com/edpic_360_360/32/1b/30/321b30fe64dbc3edce20c7d09ca810e3.jpg">
-                        <div class="user-bottom-small-text">测试名称测试名称1测试名称1</div>
-                    </div>
-                    <div isfocus="" class="float recommend-img-small"><img
-                            src="https://up.enterdesk.com/edpic_360_360/58/2d/f1/582df1a19ba41a860df98413e8ced917.jpg">
-                        <div class="user-bottom-small-text">测试名称</div>
-                    </div>
-                    <div isfocus="" class="float recommend-img-small"><img
-                            src="https://up.enterdesk.com/edpic_360_360/ab/98/35/ab9835285398472ff280ea58de328dd5.jpg">
-                        <div class="user-bottom-small-text">测试名称</div>
                     </div>
                 </div>
             </div>
@@ -413,7 +375,7 @@
         },
         //导航栏切换栏目
         _enter: function (eleObj) {
-            console.log(eleObj, 'enter');
+            // console.log(eleObj, 'enter');
             if (!document.getElementById(this._data[eleObj.focusIndex] + "-box")) {
                 console.log('该栏目内容未定义');
                 return;
@@ -422,8 +384,18 @@
             iptv.addClass(document.getElementById(groupName + "-box"), "hidden");
             nav._navIndex = eleObj.focusIndex; //记录导航索引
             groupName = this._data[this._navIndex];
-            iptv._groupList.nav.down = groupName; //重置导航向下的groupName
+            //重置导航向下的groupName
+            iptv._groupList.nav.down = groupName;
             iptv.removeClass(document.getElementById(groupName + "-box"), "hidden");
+            nav.setSelectStyle(eleObj.ele);
+        },
+        //当前可进入/已进入的栏目样式
+        setSelectStyle: function (ele) {
+            var eleArray = document.getElementsByClassName('nav-img');
+            for (var i = 0; i < eleArray.length; i++) {
+                iptv.removeClass(eleArray[i], "nav-select");
+            }
+            iptv.addClass(ele, "nav-select");
         }
     }
 
@@ -454,23 +426,24 @@
             _group: "nav",
             focusClassScale: 1.2,
             visualMargin: 50,
-            // initNoFocus: true,
+            initNoFocus: true, //初始化不自动聚焦
             hasLayer: true, //禁止自动切换聚焦组
         });
         //获取并切换至上次浏览的栏目
         nav._enter(iptv.findFocusEle(iptv.cookie("home-nav") || 1));
+        iptv.cookie(iptv.pathname) ? iptv.onFocus(iptv._nowEle) : iptv.focusGroup(nav._data[nav._navIndex])
         //移动到可视区域内
         iptv.moveScroll("right", iptv._nowEle);
         iptv.moveScroll("left", iptv._nowEle);
     }
-
+    // 默认全局返回键监听回调
     function BackParent() {
-        console.log("返回");
-
+        console.log("返回/退出上级页面");
     }
-
-    function onNavFocus() {
+    //监听nav导航聚焦完成回调
+    function onNavFocus(eleObj) {
         console.log(arguments, "---onNavFocus");
+        nav._enter(eleObj);
     }
     window.onunload = function () {
         //离开页面时 自动记录焦点
